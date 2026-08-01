@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title> 🎬Movie Search Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         /* ===== RESET & BASE ===== */
@@ -97,6 +100,7 @@
             left: -150px;
             animation-duration: 25s;
         }
+
         .bg-ornament span:nth-child(2) {
             width: 400px;
             height: 400px;
@@ -106,6 +110,7 @@
             animation-duration: 30s;
             animation-delay: 2s;
         }
+
         .bg-ornament span:nth-child(3) {
             width: 300px;
             height: 300px;
@@ -120,12 +125,15 @@
             0% {
                 transform: translate(0, 0) scale(1);
             }
+
             33% {
                 transform: translate(40px, -30px) scale(1.05);
             }
+
             66% {
                 transform: translate(-20px, 50px) scale(0.95);
             }
+
             100% {
                 transform: translate(30px, -10px) scale(1.02);
             }
@@ -390,6 +398,7 @@
                 opacity: 0;
                 transform: translateY(18px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -484,6 +493,7 @@
         .result-card .site-url::-webkit-scrollbar {
             width: 3px;
         }
+
         .result-card .site-url::-webkit-scrollbar-thumb {
             background: var(--text-muted);
             border-radius: 10px;
@@ -559,6 +569,7 @@
             .logo-text {
                 font-size: 1.2rem;
             }
+
             .logo-icon {
                 font-size: 1.6rem;
             }
@@ -597,6 +608,7 @@
                 width: 46px;
                 height: 24px;
             }
+
             .theme-toggle .toggle-thumb {
                 width: 18px;
                 height: 18px;
@@ -604,6 +616,7 @@
                 left: 2px;
                 font-size: 10px;
             }
+
             [data-theme="dark"] .theme-toggle .toggle-thumb {
                 transform: translateX(22px);
             }
@@ -618,6 +631,7 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .header-actions {
                 width: 100%;
                 justify-content: flex-start;
@@ -629,13 +643,16 @@
             width: 6px;
             height: 6px;
         }
+
         ::-webkit-scrollbar-track {
             background: transparent;
         }
+
         ::-webkit-scrollbar-thumb {
             background: var(--text-muted);
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: var(--accent);
         }
@@ -654,6 +671,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ===== BG ORNAMENTS ===== -->
@@ -672,8 +690,10 @@
         <div class="header-actions">
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                 <span class="toggle-track">
-                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-sun" style="font-size:11px;"></i></span>
-                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-moon" style="font-size:11px;"></i></span>
+                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-sun"
+                            style="font-size:11px;"></i></span>
+                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-moon"
+                            style="font-size:11px;"></i></span>
                     <span class="toggle-thumb" id="toggleThumb">
                         <i class="fas fa-sun" id="thumbIcon"></i>
                     </span>
@@ -685,13 +705,8 @@
     <!-- ===== SEARCH ===== -->
     <section class="search-section">
         <div class="search-box">
-            <input
-            type="text"
-            id="searchInput"
-            placeholder="Search for any movie"
-            autofocus
-            aria-label="Movie search"
-            />
+            <input type="text" id="searchInput" placeholder="Search for any movie" autofocus
+                aria-label="Movie search" />
             <button class="search-btn" id="searchBtn">
                 <i class="fas fa-search"></i> Search
             </button>
@@ -727,7 +742,7 @@
     </section>
 
     <script>
-        (function() {
+        (function () {
             'use strict';
 
             // ===== DOM REFS =====
@@ -752,9 +767,19 @@
                 icon: 'fa-solid fa-trophy',
                 url: (q) => `https://fullraces.com/search/?q=${q}`
             }, {
-                name: '5MovieRulz',
+                name: 'MovieRulz',
                 icon: 'fa-solid fa-film',
                 url: (q) => `https://www.5movierulz.support/search_movies?s=${q}`
+            },
+            {
+                name: 'Full Movies',
+                icon: 'fa-solid fa-film',
+                url: (q) => `https://watchfullmovies.online/?s=${q}`
+            },
+            {
+                name: 'Films Look',
+                icon: 'fa-solid fa-film',
+                url: (q) => `https://filmslook.com/search/?s=${q}`
             }, {
                 name: 'Movies4U',
                 icon: 'fa-solid fa-video',
@@ -969,4 +994,5 @@
     </script>
 
 </body>
+
 </html>
