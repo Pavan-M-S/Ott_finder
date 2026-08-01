@@ -1,4 +1,4 @@
-const sites = [
+var sites = [
     {
         name: '4KHD Hub',
         icon: 'fa-solid fa-play',
