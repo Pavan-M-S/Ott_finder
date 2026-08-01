@@ -1,20 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🎬Movie Search Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    
+
     <!-- Load Settings and Links -->
     <script src="settings.js"></script>
     <script src="links.js"></script>
 
     <style>
         /* ===== RESET & BASE ===== */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -38,7 +43,7 @@
             --accent-hover: #4f46e5;
             --accent-danger: #ef4444;
             --radius: 16px;
-            --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy smooth animation */
+            --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             --font: 'Inter', sans-serif;
         }
@@ -59,7 +64,9 @@
             --glow: rgba(99, 102, 241, 0.30);
         }
 
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             font-family: var(--font);
@@ -70,7 +77,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 16px 60px;
+            padding: 20px 16px 0px;
             background-image:
                 radial-gradient(ellipse at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at 90% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
@@ -78,86 +85,326 @@
         }
 
         /* ===== BACKGROUND PARTICLES ===== */
-        .bg-ornament { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .bg-ornament span { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%); animation: floatOrb 20s ease-in-out infinite alternate; }
-        .bg-ornament span:nth-child(1) { width: 500px; height: 500px; top: -150px; left: -150px; animation-duration: 25s; }
-        .bg-ornament span:nth-child(2) { width: 400px; height: 400px; bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(236, 72, 153, 0.07), transparent 70%); animation-duration: 30s; animation-delay: 2s; }
+        .bg-ornament {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-ornament span {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
+            animation: floatOrb 20s ease-in-out infinite alternate;
+        }
+
+        .bg-ornament span:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            left: -150px;
+            animation-duration: 25s;
+        }
+
+        .bg-ornament span:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.07), transparent 70%);
+            animation-duration: 30s;
+            animation-delay: 2s;
+        }
 
         @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -40px) scale(1.05); }
-            100% { transform: translate(-20px, 20px) scale(0.95); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -40px) scale(1.05);
+            }
+
+            100% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
         }
 
         /* ===== HEADER & THEMING ===== */
-        .app-header { position: relative; z-index: 2; width: 100%; max-width: 900px; display: flex; align-items: center; justify-content: space-between; padding: 12px 0 20px; flex-wrap: wrap; gap: 12px; }
-        .logo-area { display: flex; align-items: center; gap: 10px; transition: transform var(--transition); cursor: pointer; }
-        .logo-area:hover { transform: scale(1.05); }
-        .logo-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4)); animation: pulseGlow 3s infinite alternate; }
-        .logo-text { font-weight: 800; font-size: 1.6rem; background: linear-gradient(135deg, var(--text-primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        @keyframes pulseGlow {
-            from { filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.3)); transform: translateY(0); }
-            to { filter: drop-shadow(0 6px 16px rgba(99, 102, 241, 0.6)); transform: translateY(-2px); }
+        .app-header {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .theme-toggle { position: relative; width: 56px; height: 30px; border-radius: 50px; border: none; background: var(--bg-secondary); box-shadow: inset 0 0 0 1px var(--border-color), var(--shadow); cursor: pointer; transition: all var(--transition); }
-        .theme-toggle:hover { transform: scale(1.08); box-shadow: 0 4px 15px var(--glow); }
-        .theme-toggle .toggle-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 6px; color: var(--text-muted); }
-        .theme-toggle .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); transition: transform var(--transition-smooth), background var(--transition-smooth); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
-        [data-theme="dark"] .theme-toggle .toggle-thumb { transform: translateX(26px); background: #fbbf24; color: #000; box-shadow: 0 2px 12px rgba(251, 191, 36, 0.4); }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform var(--transition);
+            cursor: pointer;
+        }
+
+        .logo-area:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes pulseGlow {
+            from {
+                filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.3));
+                transform: translateY(0);
+            }
+
+            to {
+                filter: drop-shadow(0 6px 16px rgba(99, 102, 241, 0.6));
+                transform: translateY(-2px);
+            }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Linker Button */
+        .top-linker-btn {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition);
+        }
+
+        .top-linker-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 56px;
+            height: 30px;
+            border-radius: 50px;
+            border: none;
+            background: var(--bg-secondary);
+            box-shadow: inset 0 0 0 1px var(--border-color), var(--shadow);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px var(--glow);
+        }
+
+        .theme-toggle .toggle-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+            color: var(--text-muted);
+        }
+
+        .theme-toggle .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+            transition: transform var(--transition-smooth), background var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        [data-theme="dark"] .theme-toggle .toggle-thumb {
+            transform: translateX(26px);
+            background: #fbbf24;
+            color: #000;
+            box-shadow: 0 2px 12px rgba(251, 191, 36, 0.4);
+        }
 
         /* ===== SEARCH BAR ===== */
-        .search-section { position: relative; z-index: 2; width: 100%; max-width: 900px; margin-top: 10px; }
-        .search-box { display: flex; gap: 12px; background: var(--bg-secondary); border-radius: 24px; padding: 8px; box-shadow: var(--shadow); border: 2px solid transparent; transition: all var(--transition-smooth); backdrop-filter: blur(8px); }
-        .search-box:focus-within { box-shadow: 0 10px 40px var(--glow); border-color: var(--accent); transform: translateY(-2px); }
-        .search-box input { flex: 1; border: none; background: transparent; padding: 14px 20px; font-size: 1.1rem; font-family: var(--font); color: var(--text-primary); outline: none; }
-        .search-box .search-btn { background: var(--accent); border: none; border-radius: 18px; padding: 14px 32px; font-weight: 600; font-size: 1rem; color: #fff; cursor: pointer; transition: all var(--transition); display: flex; align-items: center; gap: 10px; }
-        .search-box .search-btn:hover { background: var(--accent-hover); transform: scale(1.05); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4); }
-        .search-box .search-btn:active { transform: scale(0.95); }
+        .search-section {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 8px;
+            box-shadow: var(--shadow);
+            border: 2px solid transparent;
+            transition: all var(--transition-smooth);
+            backdrop-filter: blur(8px);
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 10px 40px var(--glow);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-family: var(--font);
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .search-box .search-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 18px;
+            padding: 14px 32px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box .search-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .search-box .search-btn:active {
+            transform: scale(0.95);
+        }
 
         /* ===== RESULTS GRID ===== */
-        .results-section { position: relative; z-index: 2; width: 100%; max-width: 900px; margin-top: 35px; }
-        .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .results-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--text-secondary); }
-        
-        .results-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
-            gap: 20px; 
-            align-items: start; 
+        .results-section {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 35px;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+
+        .section-divider {
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
         }
 
         /* ===== RESULT CARDS ===== */
-        .result-card { 
-            background: var(--bg-card); 
-            backdrop-filter: blur(12px); 
-            border-radius: 20px; 
-            padding: 20px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); 
-            transition: all var(--transition-smooth); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
+        .result-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: all var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             animation: cardEnter 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
         }
 
         @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .result-card:hover { 
-            transform: translateY(-6px); 
-            box-shadow: var(--shadow-hover); 
-            border-color: rgba(99, 102, 241, 0.4); 
+        .result-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(99, 102, 241, 0.4);
             background: var(--bg-card-hover);
         }
 
-        /* EXPANDED STATE (Spans full row) */
         .result-card.expanded {
-            grid-column: 1 / -1; /* Takes full width of the grid */
+            grid-column: 1 / -1;
             background: var(--bg-card-expanded);
             border-color: var(--accent);
             box-shadow: var(--shadow-expanded);
@@ -165,24 +412,67 @@
             padding: 24px;
         }
 
-        /* Card Contents stacked vertically */
         .card-top-row {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             gap: 12px;
         }
-        
-        .site-info { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .site-header { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
-        .site-header i { font-size: 1.2rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--bg-secondary); color: var(--accent); border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        .site-url { font-size: 0.8rem; color: var(--text-muted); background: var(--bg-primary); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Monaco', monospace; display: inline-block; width: fit-content; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .card-actions { width: 100%; margin-top: 4px; }
+        .site-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .site-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .site-header i {
+            font-size: 1.2rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--accent);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-url {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Monaco', monospace;
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-actions {
+            width: 100%;
+            margin-top: 4px;
+        }
 
         /* BUTTONS */
-        .open-btn, .open-link {
+        .open-btn,
+        .open-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -199,11 +489,31 @@
             text-decoration: none;
             width: fit-content;
         }
-        .open-btn:hover, .open-link:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
-        .open-btn:active, .open-link:active { transform: translateY(1px) scale(0.96); }
-        
-        .open-btn.close-mode { background: var(--bg-secondary); color: var(--accent-danger); border: 1px solid var(--accent-danger); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
-        .open-btn.close-mode:hover { background: var(--accent-danger); color: #fff; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+
+        .open-btn:hover,
+        .open-link:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .open-btn:active,
+        .open-link:active {
+            transform: translateY(1px) scale(0.96);
+        }
+
+        .open-btn.close-mode {
+            background: var(--bg-secondary);
+            color: var(--accent-danger);
+            border: 1px solid var(--accent-danger);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+        }
+
+        .open-btn.close-mode:hover {
+            background: var(--accent-danger);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
 
         /* ===== EMBED IFRAME ANIMATION & STYLING ===== */
         .embed-wrapper {
@@ -212,7 +522,7 @@
             transition: grid-template-rows 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin 0.3s ease;
             width: 100%;
         }
-        
+
         .embed-wrapper.open {
             grid-template-rows: 1fr;
             margin-top: 15px;
@@ -224,38 +534,35 @@
             flex-direction: column;
         }
 
-        /* Resizable frame setup */
         .resizable-frame {
-            height: 500px; /* Default starting height */
+            height: 500px;
             min-height: 250px;
             width: 100%;
             border-radius: 16px;
             border: 2px solid var(--accent);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 40px rgba(0, 0, 0, 0.15);
             background: #000;
             position: relative;
-            resize: both; /* MAGIC: allows resizing from corners/edges */
-            overflow: auto; /* Required for resize to work */
-            /* Add custom handle styling via background */
+            resize: both;
+            overflow: auto;
             background-image: linear-gradient(135deg, transparent 50%, var(--accent) 50%);
             background-size: 15px 15px;
             background-repeat: no-repeat;
             background-position: bottom 4px right 4px;
         }
-        
+
         .resizable-frame iframe {
             width: 100%;
             height: 100%;
             border: none;
             background: var(--bg-primary);
             position: absolute;
-            top: 0; left: 0;
-            /* Prevents iframe from blocking the resize handle */
+            top: 0;
+            left: 0;
             z-index: 1;
             border-radius: 14px;
         }
 
-        /* Corner resize indicator overlay */
         .resize-indicator {
             position: absolute;
             bottom: 4px;
@@ -271,14 +578,53 @@
             justify-content: flex-end;
         }
 
-        .hidden { display: none !important; }
-        
+        /* ===== FOOTER ===== */
+        .app-footer {
+            width: 100%;
+            text-align: center;
+            padding: 60px 20px 30px;
+            margin-top: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-footer p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .app-footer .footer-sub {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         @media (max-width: 640px) {
-            .results-grid { grid-template-columns: 1fr; }
-            .open-btn, .open-link { width: 100%; }
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .open-btn,
+            .open-link {
+                width: 100%;
+            }
+
+            .header-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="bg-ornament" aria-hidden="true">
         <span></span><span></span>
@@ -289,13 +635,20 @@
             <span class="logo-icon">🎬</span>
             <span class="logo-text">MoviePortal</span>
         </div>
-        <button class="theme-toggle" id="themeToggle">
-            <span class="toggle-track">
-                <i class="fas fa-sun" style="font-size: 11px;"></i>
-                <i class="fas fa-moon" style="font-size: 11px;"></i>
-                <span class="toggle-thumb" id="toggleThumb"><i class="fas fa-sun" id="thumbIcon"></i></span>
-            </span>
-        </button>
+        <div class="header-actions">
+            <!-- External Link Button -->
+            <a href="https://website-linker.vercel.app/" target="_blank" class="top-linker-btn">
+                <i class="fas fa-layer-group"></i> Open all my websites
+            </a>
+
+            <button class="theme-toggle" id="themeToggle">
+                <span class="toggle-track">
+                    <i class="fas fa-sun" style="font-size: 11px;"></i>
+                    <i class="fas fa-moon" style="font-size: 11px;"></i>
+                    <span class="toggle-thumb" id="toggleThumb"><i class="fas fa-sun" id="thumbIcon"></i></span>
+                </span>
+            </button>
+        </div>
     </header>
 
     <section class="search-section">
@@ -305,12 +658,27 @@
         </div>
     </section>
 
+    <!-- Main Results (Dynamic URLs) -->
     <section class="results-section" id="resultsSection">
         <div class="results-header" id="resultsHeader" style="display: none;">
-            <h2 id="resultsTitle">Search Results <span id="resultCount" style="color:var(--accent); margin-left:8px;"></span></h2>
+            <h2 id="resultsTitle">Search Results <span id="resultCount"
+                    style="color:var(--accent); margin-left:8px;"></span></h2>
         </div>
         <div class="results-grid" id="resultsGrid"></div>
+
+        <!-- Divider for Static Links -->
+        <div class="section-divider" id="staticDivider" style="display: none;">
+            <i class="fas fa-bookmark" style="color:var(--accent);"></i> Direct Links (No Search Needed)
+        </div>
+        <!-- Static Results (No Search Params needed) -->
+        <div class="results-grid" id="staticResultsGrid"></div>
     </section>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <p>Made by Pavan | 2026</p>
+        <p class="footer-sub">MoviePortal Search Engine ✨</p>
+    </footer>
 
     <script>
         (function () {
@@ -319,7 +687,9 @@
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const resultsGrid = document.getElementById('resultsGrid');
+            const staticResultsGrid = document.getElementById('staticResultsGrid');
             const resultsHeader = document.getElementById('resultsHeader');
+            const staticDivider = document.getElementById('staticDivider');
             const resultCount = document.getElementById('resultCount');
             const themeToggle = document.getElementById('themeToggle');
             const thumbIcon = document.getElementById('thumbIcon');
@@ -328,25 +698,36 @@
             function getQuery() { return searchInput.value.trim(); }
 
             function buildResults(query) {
-                if (!query) return [];
+                // If the user hasn't searched anything, don't build results
+                if (!query) return { dynamic: [], static: [] };
                 const plusQuery = encodePlus(query);
-                return sites.map(site => ({
+
+                // Map from allurl.specificurl
+                const dynamicLinks = allurl.specificurl.map(site => ({
                     name: site.name,
                     icon: site.icon,
                     url: site.url(plusQuery)
                 }));
+
+                // Map from allurl.unspecificurl
+                const staticLinks = allurl.unspecificurl.map(site => ({
+                    name: site.name,
+                    icon: site.icon,
+                    url: site.url
+                }));
+
+                return { dynamic: dynamicLinks, static: staticLinks };
             }
 
             // Global Embedded Player logic
-            window.toggleEmbed = function(btnElement, embedUrl) {
+            window.toggleEmbed = function (btnElement, embedUrl) {
                 const card = btnElement.closest('.result-card');
                 const wrapper = card.querySelector('.embed-wrapper');
                 const iframe = card.querySelector('iframe');
-                
-                // Is it already open?
+
                 const isOpen = card.classList.contains('expanded');
 
-                // First, close ALL other open cards to keep it clean
+                // Close ALL other open cards
                 document.querySelectorAll('.result-card.expanded').forEach(otherCard => {
                     if (otherCard !== card) {
                         otherCard.classList.remove('expanded');
@@ -364,87 +745,102 @@
                     wrapper.classList.remove('open');
                     btnElement.classList.remove('close-mode');
                     btnElement.innerHTML = '<i class="fas fa-external-link-alt"></i> Open';
-                    
-                    // Delay clearing source to allow CSS transition to finish smoothly
-                    setTimeout(() => { iframe.src = ''; }, 500); 
+                    setTimeout(() => { iframe.src = ''; }, 500);
                 } else {
-                    // Open this card (Expands to full row)
+                    // Open this card
                     card.classList.add('expanded');
                     wrapper.classList.add('open');
                     iframe.src = embedUrl;
-                    
+
                     btnElement.classList.add('close-mode');
                     btnElement.innerHTML = '<i class="fas fa-times"></i> Close Frame';
-                    
-                    // Smooth scroll so the expanded window is perfectly in view
+
                     setTimeout(() => {
                         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 350);
                 }
             };
 
+            // HTML Generator function that applies the correct section settings
+            function generateCardHTML(item, index, container, sectionSettings) {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.style.animationDelay = `${index * 60}ms`;
+
+                let displayUrl = item.url;
+                try {
+                    const urlObj = new URL(item.url);
+                    displayUrl = urlObj.hostname.replace('www.', '') + urlObj.pathname;
+                } catch (_) { }
+
+                // Use the sectionSettings passed from AppSettings
+                const nameHtml = sectionSettings.showNames ? `<span>${item.name}</span>` : ``;
+                const urlHtml = sectionSettings.showLinks ? `<div class="site-url" title="${item.url}">${displayUrl}</div>` : ``;
+
+                let actionHtml = '';
+                let embedContainer = '';
+
+                // Uses specific setting configurations for whether a section should embed or open in new tab
+                if (sectionSettings.embed) {
+                    actionHtml = `<button class="open-btn" onclick="toggleEmbed(this, '${item.url}')"><i class="fas fa-external-link-alt"></i> Open</button>`;
+                    embedContainer = `
+                    <div class="embed-wrapper">
+                        <div class="iframe-container">
+                            <div class="resizable-frame">
+                                <iframe loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
+                                <div class="resize-indicator"><i class="fas fa-compress-alt" style="transform: rotate(90deg);"></i></div>
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    actionHtml = `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="open-link"><i class="fas fa-external-link-alt"></i> Open in Tab</a>`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-top-row">
+                        <div class="site-info">
+                            <div class="site-header">
+                                <i class="${item.icon}"></i>
+                                ${nameHtml}
+                            </div>
+                            ${urlHtml}
+                        </div>
+                        <div class="card-actions">
+                            ${actionHtml}
+                        </div>
+                    </div>
+                    ${embedContainer}
+                `;
+                container.appendChild(card);
+            }
+
             function render(query) {
                 const results = buildResults(query);
                 resultsGrid.innerHTML = '';
+                staticResultsGrid.innerHTML = '';
 
-                if (results.length === 0) {
+                if (results.dynamic.length === 0 && results.static.length === 0) {
                     resultsHeader.style.display = 'none';
+                    staticDivider.style.display = 'none';
                     return;
                 }
 
+                // Render Search Specific URLs passing specificUrls settings
                 resultsHeader.style.display = 'flex';
-                resultCount.textContent = `(${results.length} sources)`;
-
-                results.forEach((item, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'result-card';
-                    card.style.animationDelay = `${index * 60}ms`; // Staggered slick animation
-
-                    let displayUrl = item.url;
-                    try {
-                        const urlObj = new URL(item.url);
-                        displayUrl = urlObj.hostname.replace('www.', '') + urlObj.pathname;
-                    } catch (_) {}
-
-                    const nameHtml = AppSettings.showNames ? `<span>${item.name}</span>` : ``;
-                    const urlHtml = AppSettings.showLinks ? `<div class="site-url" title="${item.url}">${displayUrl}</div>` : ``;
-
-                    let actionHtml = '';
-                    let embedContainer = '';
-
-                    if (AppSettings.embed) {
-                        actionHtml = `<button class="open-btn" onclick="toggleEmbed(this, '${item.url}')"><i class="fas fa-external-link-alt"></i> Open</button>`;
-                        
-                        embedContainer = `
-                        <div class="embed-wrapper">
-                            <div class="iframe-container">
-                                <div class="resizable-frame">
-                                    <iframe loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
-                                    <div class="resize-indicator"><i class="fas fa-compress-alt" style="transform: rotate(90deg);"></i></div>
-                                </div>
-                            </div>
-                        </div>`;
-                    } else {
-                        actionHtml = `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="open-link"><i class="fas fa-external-link-alt"></i> Open in Tab</a>`;
-                    }
-
-                    card.innerHTML = `
-                        <div class="card-top-row">
-                            <div class="site-info">
-                                <div class="site-header">
-                                    <i class="${item.icon}"></i>
-                                    ${nameHtml}
-                                </div>
-                                ${urlHtml}
-                            </div>
-                            <div class="card-actions">
-                                ${actionHtml}
-                            </div>
-                        </div>
-                        ${embedContainer}
-                    `;
-                    resultsGrid.appendChild(card);
+                resultCount.textContent = `(${results.dynamic.length} sources)`;
+                results.dynamic.forEach((item, index) => {
+                    generateCardHTML(item, index, resultsGrid, AppSettings.specificUrls);
                 });
+
+                // Render Static URLs passing unspecificUrls settings
+                if (results.static.length > 0) {
+                    staticDivider.style.display = 'flex';
+                    results.static.forEach((item, index) => {
+                        generateCardHTML(item, index, staticResultsGrid, AppSettings.unspecificUrls);
+                    });
+                } else {
+                    staticDivider.style.display = 'none';
+                }
             }
 
             function performSearch() {
@@ -461,10 +857,10 @@
                     searchInput.focus();
                     return;
                 }
-                
+
                 searchBtn.style.transform = 'scale(0.9)';
                 setTimeout(() => searchBtn.style.transform = '', 150);
-                
+
                 render(query);
             }
 
@@ -484,7 +880,7 @@
                 searchBtn.addEventListener('click', performSearch);
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch());
                 themeToggle.addEventListener('click', toggleTheme);
-                
+
                 setTimeout(() => searchInput.focus(), 300);
             }
 
@@ -492,4 +888,5 @@
         })();
     </script>
 </body>
+
 </html>
