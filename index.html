@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title> 🎬Movie Search Portal</title>
+    <title>🎬 Movie Search Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
@@ -39,6 +39,7 @@
             --radius: 16px;
             --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --iframe-bg: #0a0a14;
         }
 
         [data-theme="dark"] {
@@ -55,6 +56,7 @@
             --glow: rgba(99, 102, 241, 0.30);
             --input-bg: #1e1e36;
             --input-border: #3a3a5a;
+            --iframe-bg: #0a0a14;
         }
 
         html {
@@ -77,7 +79,6 @@
             background-attachment: fixed;
         }
 
-        /* ===== ANIMATED BACKGROUND PARTICLES ===== */
         .bg-ornament {
             position: fixed;
             inset: 0;
@@ -239,10 +240,6 @@
             font-size: 12px;
         }
 
-        [data-theme="light"] .theme-toggle .toggle-thumb i {
-            color: #fff;
-        }
-
         /* ===== SEARCH SECTION ===== */
         .search-section {
             position: relative;
@@ -317,7 +314,6 @@
             font-size: 1rem;
         }
 
-        /* ===== SEARCH TIPS ===== */
         .search-tips {
             margin-top: 12px;
             font-size: 0.85rem;
@@ -388,7 +384,7 @@
 
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 14px;
             animation: fadeUp 0.5s ease-out;
         }
@@ -405,6 +401,7 @@
             }
         }
 
+        /* ===== CARD ===== */
         .result-card {
             background: var(--bg-card);
             backdrop-filter: blur(8px);
@@ -415,7 +412,7 @@
             transition: all var(--transition);
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             position: relative;
             overflow: hidden;
         }
@@ -428,6 +425,7 @@
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), transparent);
             opacity: 0;
             transition: opacity var(--transition);
+            pointer-events: none;
         }
 
         .result-card:hover {
@@ -481,13 +479,17 @@
             background: var(--bg-primary);
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            transition: background var(--transition);
+            transition: all var(--transition);
             position: relative;
             z-index: 1;
             font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
             line-height: 1.4;
             max-height: 60px;
             overflow-y: auto;
+        }
+
+        .result-card .site-url.hidden-url {
+            display: none;
         }
 
         .result-card .site-url::-webkit-scrollbar {
@@ -499,38 +501,141 @@
             border-radius: 10px;
         }
 
-        .result-card .open-link {
+        /* ===== OPEN BUTTON ===== */
+        .result-card .open-btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
-            margin-top: 4px;
-            padding: 6px 14px;
+            padding: 8px 18px;
             border-radius: 8px;
             background: var(--accent);
             color: #fff;
             font-weight: 500;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             border: none;
             cursor: pointer;
-            transition: background var(--transition), transform var(--transition);
-            text-decoration: none;
-            width: fit-content;
+            transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+            width: 100%;
             position: relative;
             z-index: 1;
             font-family: var(--font);
+            margin-top: 2px;
         }
 
-        .result-card .open-link:hover {
+        .result-card .open-btn:hover {
             background: var(--accent-hover);
-            transform: scale(1.03);
+            transform: scale(1.02);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
         }
 
-        .result-card .open-link:active {
-            transform: scale(0.96);
+        .result-card .open-btn:active {
+            transform: scale(0.97);
         }
 
-        .result-card .open-link i {
-            font-size: 0.7rem;
+        .result-card .open-btn i {
+            font-size: 0.8rem;
+        }
+
+        .result-card .open-btn.is-open {
+            background: #10b981;
+        }
+
+        .result-card .open-btn.is-open:hover {
+            background: #059669;
+        }
+
+        /* ===== IFRAME EMBED ===== */
+        .result-card .embed-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--iframe-bg);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition);
+            max-height: 0;
+            opacity: 0;
+            transform: scaleY(0.96);
+            transform-origin: top center;
+            pointer-events: none;
+        }
+
+        .result-card .embed-wrapper.open {
+            max-height: 480px;
+            opacity: 1;
+            transform: scaleY(1);
+            pointer-events: auto;
+            margin-top: 6px;
+        }
+
+        .result-card .embed-wrapper iframe {
+            display: block;
+            width: 100%;
+            height: 420px;
+            border: none;
+            background: var(--iframe-bg);
+            transition: height var(--transition);
+        }
+
+        .result-card .embed-wrapper .embed-fallback {
+            display: none;
+            padding: 20px 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: var(--bg-primary);
+        }
+
+        .result-card .embed-wrapper .embed-fallback i {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+        .result-card .embed-wrapper .embed-fallback a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .result-card .embed-wrapper iframe[src=""]+.embed-fallback {
+            display: block;
+        }
+
+        .result-card .embed-wrapper iframe[src=""] {
+            display: none;
+        }
+
+        .result-card .embed-wrapper .embed-loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--iframe-bg);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            gap: 10px;
+            transition: opacity 0.4s;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .result-card .embed-wrapper .embed-loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .result-card .embed-wrapper .embed-loader i {
+            font-size: 1.4rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ===== EMPTY STATE ===== */
@@ -624,6 +729,14 @@
             .search-tips {
                 font-size: 0.75rem;
             }
+
+            .result-card .embed-wrapper.open {
+                max-height: 360px;
+            }
+
+            .result-card .embed-wrapper iframe {
+                height: 300px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -657,31 +770,22 @@
             background: var(--accent);
         }
 
-        /* ===== UTILITY ===== */
         .hidden {
             display: none !important;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-8 {
-            margin-top: 8px;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ===== BG ORNAMENTS ===== -->
+    <!-- BG ORNAMENTS -->
     <div class="bg-ornament" aria-hidden="true">
         <span></span>
         <span></span>
         <span></span>
     </div>
 
-    <!-- ===== HEADER ===== -->
+    <!-- HEADER -->
     <header class="app-header">
         <div class="logo-area">
             <span class="logo-icon">🎬</span>
@@ -702,7 +806,7 @@
         </div>
     </header>
 
-    <!-- ===== SEARCH ===== -->
+    <!-- SEARCH -->
     <section class="search-section">
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Search for any movie" autofocus
@@ -713,11 +817,11 @@
         </div>
         <div class="search-tips">
             <i class="fas fa-lightbulb"></i>
-            Press <kbd>Enter</kbd> to search &nbsp;·&nbsp; Opens in new tabs
+            Press <kbd>Enter</kbd> to search &nbsp;·&nbsp; Click <kbd>Open</kbd> to embed or visit site
         </div>
     </section>
 
-    <!-- ===== RESULTS ===== -->
+    <!-- RESULTS -->
     <section class="results-section" id="resultsSection">
         <div class="results-header">
             <h2 id="resultsTitle">
@@ -728,19 +832,99 @@
             <span class="count-badge" id="countBadge">0 sites</span>
         </div>
 
-        <!-- Results Grid -->
-        <div class="results-grid" id="resultsGrid">
-            <!-- populated by JS -->
-        </div>
+        <div class="results-grid" id="resultsGrid"></div>
 
-        <!-- Empty state (shown initially) -->
         <div class="empty-state" id="emptyState">
             <i class="fas fa-film"></i>
-            <p>Type a movie name above and hit Search.<br />We'll find it across <strong>11</strong> websites.</p>
-            <p class="hint">✨ Click any link to open in a new tab</p>
+            <p>Type a movie name above and hit Search.<br />We'll find it across <strong
+                    id="siteCountDisplay">0</strong> websites.</p>
+            <p class="hint">✨ Click <strong>Open</strong> on any card to embed the site below it</p>
         </div>
     </section>
 
+    <!-- ===== SCRIPTS ===== -->
+    <!-- links.js — the site list -->
+    <script>
+        // ============================================================
+        //  links.js  —  Site list (edit this to add/remove sites)
+        // ============================================================
+        const SITES = [{
+            name: '4KHD Hub',
+            icon: 'fa-solid fa-play',
+            url: (q) => `https://4khdhub.one/?s=${q}`
+        }, {
+            name: 'FullRaces',
+            icon: 'fa-solid fa-trophy',
+            url: (q) => `https://fullraces.com/search/?q=${q}`
+        }, {
+            name: 'MovieRulz',
+            icon: 'fa-solid fa-film',
+            url: (q) => `https://www.5movierulz.support/search_movies?s=${q}`
+        }, {
+            name: 'Full Movies',
+            icon: 'fa-solid fa-film',
+            url: (q) => `https://watchfullmovies.online/?s=${q}`
+        }, {
+            name: 'Films Look',
+            icon: 'fa-solid fa-film',
+            url: (q) => `https://filmslook.com/search/?s=${q}`
+        }, {
+            name: 'Movies4U',
+            icon: 'fa-solid fa-video',
+            url: (q) => `https://movies4u.ss/?s=${q}`
+        }, {
+            name: 'Filmywap',
+            icon: 'fa-solid fa-download',
+            url: (q) => `https://www.filmywap.farm/mobile/search?find=${q}`
+        }, {
+            name: 'WorldFree4U (dog)',
+            icon: 'fa-solid fa-globe',
+            url: (q) => `https://worldfree4u.dog/?s=${q}`
+        }, {
+            name: 'WorldFree4U (video)',
+            icon: 'fa-solid fa-globe',
+            url: (q) => `https://worldfree4u.video/?s=${q}`
+        }, {
+            name: 'JustWatch (OTT)',
+            icon: 'fa-solid fa-tv',
+            url: (q) => `https://www.justwatch.com/in/search?q=${encodeURIComponent(q.replace(/\+/g, ' '))}`
+        }, {
+            name: 'Google',
+            icon: 'fa-brands fa-google',
+            url: (q) => `https://www.google.com/search?q=${q}+where+to+watch+online`
+        }, {
+            name: 'IMDb',
+            icon: 'fa-brands fa-imdb',
+            url: (q) => `https://www.imdb.com/find?q=${encodeURIComponent(q.replace(/\+/g, ' '))}`
+        }, {
+            name: 'TMDB',
+            icon: 'fa-solid fa-clapperboard',
+            url: (q) => `https://www.themoviedb.org/search?query=${q}`
+        }];
+    </script>
+
+    <!-- settings.js — config (edit these to toggle features) -->
+    <script>
+        // ============================================================
+        //  settings.js  —  Feature toggles
+        // ============================================================
+        const SETTINGS = {
+            // If true, clicking "Open" shows the site in an iframe below the card.
+            // If false, clicking "Open" opens the site in a new tab.
+            embed: true,
+
+            // Show/hide the raw URL text inside each card.
+            showLinks: false,
+
+            // Show/hide the site name inside each card.
+            showNames: true,
+
+            // Show/hide the site icon inside each card.
+            showIcons: true
+        };
+    </script>
+
+    <!-- main app script -->
     <script>
         (function () {
             'use strict';
@@ -752,71 +936,18 @@
             const emptyState = document.getElementById('emptyState');
             const resultCount = document.getElementById('resultCount');
             const countBadge = document.getElementById('countBadge');
-            const resultsTitle = document.getElementById('resultsTitle');
+            const siteCountDisplay = document.getElementById('siteCountDisplay');
             const themeToggle = document.getElementById('themeToggle');
             const toggleThumb = document.getElementById('toggleThumb');
             const thumbIcon = document.getElementById('thumbIcon');
 
-            // ===== SITE LIST =====
-            const sites = [{
-                name: '4KHD Hub',
-                icon: 'fa-solid fa-play',
-                url: (q) => `https://4khdhub.one/?s=${q}`
-            }, {
-                name: 'FullRaces',
-                icon: 'fa-solid fa-trophy',
-                url: (q) => `https://fullraces.com/search/?q=${q}`
-            }, {
-                name: 'MovieRulz',
-                icon: 'fa-solid fa-film',
-                url: (q) => `https://www.5movierulz.support/search_movies?s=${q}`
-            },
-            {
-                name: 'Full Movies',
-                icon: 'fa-solid fa-film',
-                url: (q) => `https://watchfullmovies.online/?s=${q}`
-            },
-            {
-                name: 'Films Look',
-                icon: 'fa-solid fa-film',
-                url: (q) => `https://filmslook.com/search/?s=${q}`
-            }, {
-                name: 'Movies4U',
-                icon: 'fa-solid fa-video',
-                url: (q) => `https://movies4u.ss/?s=${q}`
-            }, {
-                name: 'Filmywap',
-                icon: 'fa-solid fa-download',
-                url: (q) => `https://www.filmywap.farm/mobile/search?find=${q}`
-            }, {
-                name: 'WorldFree4U (dog)',
-                icon: 'fa-solid fa-globe',
-                url: (q) => `https://worldfree4u.dog/?s=${q}`
-            }, {
-                name: 'WorldFree4U (video)',
-                icon: 'fa-solid fa-globe',
-                url: (q) => `https://worldfree4u.video/?s=${q}`
-            }, {
-                name: 'JustWatch (OTT)',
-                icon: 'fa-solid fa-tv',
-                url: (q) => `https://www.justwatch.com/in/search?q=${encodeURIComponent(q.replace(/\+/g, ' '))}`
-            }, {
-                name: 'Google',
-                icon: 'fa-brands fa-google',
-                url: (q) => `https://www.google.com/search?q=${q}+where+to+watch+online`
-            }, {
-                name: 'IMDb',
-                icon: 'fa-brands fa-imdb',
-                url: (q) => `https://www.imdb.com/find?q=${encodeURIComponent(q.replace(/\+/g, ' '))}`
-            }, {
-                name: 'TMDB',
-                icon: 'fa-solid fa-clapperboard',
-                url: (q) => `https://www.themoviedb.org/search?query=${q}`
-            }];
+            // Show total site count in empty state
+            if (siteCountDisplay) {
+                siteCountDisplay.textContent = SITES.length;
+            }
 
             // ===== HELPERS =====
             function encodePlus(str) {
-                // Replace spaces with '+' for URLs that expect that format
                 return str.trim().replace(/\s+/g, '+');
             }
 
@@ -826,13 +957,11 @@
 
             function buildResults(query) {
                 if (!query) return [];
-
                 const plusQuery = encodePlus(query);
-                return sites.map(site => ({
+                return SITES.map(site => ({
                     name: site.name,
                     icon: site.icon,
                     url: site.url(plusQuery),
-                    // store the raw query for display
                     displayQuery: query
                 }));
             }
@@ -840,8 +969,6 @@
             // ===== RENDER =====
             function render(query) {
                 const results = buildResults(query);
-
-                // Clear grid
                 resultsGrid.innerHTML = '';
 
                 if (results.length === 0) {
@@ -855,17 +982,15 @@
                 emptyState.classList.add('hidden');
                 resultsGrid.classList.remove('hidden');
 
-                // Update count
                 resultCount.textContent = `(${results.length})`;
                 countBadge.textContent = `${results.length} sites`;
 
-                // Build cards
                 results.forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'result-card';
                     card.style.animationDelay = `${index * 40}ms`;
 
-                    // Extract domain for display (clean up URL)
+                    // Build URL display
                     let displayUrl = item.url;
                     try {
                         const urlObj = new URL(item.url);
@@ -875,39 +1000,199 @@
                         if (displayUrl.length > 50) displayUrl = displayUrl.slice(0, 50) + '…';
                     } catch (_) { /* keep raw */ }
 
+                    // Settings-driven visibility
+                    const showName = SETTINGS.showNames !== false;
+                    const showLink = SETTINGS.showLinks === true;
+                    const showIcon = SETTINGS.showIcons !== false;
+                    const embedEnabled = SETTINGS.embed === true;
+
+                    // Build card
+                    let iconHtml = '';
+                    if (showIcon) {
+                        iconHtml = `<i class="${item.icon}"></i>`;
+                    }
+
+                    let nameHtml = '';
+                    if (showName) {
+                        nameHtml = `<span class="site-name">${item.name}</span>`;
+                    }
+
+                    let urlHtml = '';
+                    if (showLink) {
+                        urlHtml = `<div class="site-url" title="${item.url}">${displayUrl}</div>`;
+                    } else {
+                        urlHtml = `<div class="site-url hidden-url" title="${item.url}">${displayUrl}</div>`;
+                    }
+
+                    // The embed wrapper (hidden by default)
+                    const embedId = `embed-${index}-${Date.now()}`;
+
                     card.innerHTML = `
                             <div class="site-icon">
-                                <i class="${item.icon}"></i>
-                                <span class="site-name">${item.name}</span>
+                                ${iconHtml}
+                                ${nameHtml}
                             </div>
-                            <div class="site-url" title="${item.url}">${displayUrl}</div>
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="open-link">
+                            ${urlHtml}
+                            <button class="open-btn" data-url="${item.url}" data-embed-id="${embedId}" data-embed="${embedEnabled}">
                                 <i class="fas fa-external-link-alt"></i> Open
-                            </a>
+                            </button>
+                            <div class="embed-wrapper" id="${embedId}">
+                                <div class="embed-loader"><i class="fas fa-spinner"></i> Loading…</div>
+                                <iframe src="" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" loading="lazy"></iframe>
+                                <div class="embed-fallback">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>This site cannot be embedded.<br />
+                                    <a href="#" target="_blank" rel="noopener noreferrer" class="fallback-link">Open in new tab →</a></p>
+                                </div>
+                            </div>
                         `;
 
                     resultsGrid.appendChild(card);
-                });
 
-                // Scroll to results on mobile after a tiny delay
-                const resultsSection = document.getElementById('resultsSection');
-                if (window.innerWidth < 640) {
-                    setTimeout(() => {
-                        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 200);
-                }
+                    // ---- Wire up the Open button ----
+                    const btn = card.querySelector('.open-btn');
+                    const wrapper = card.querySelector('.embed-wrapper');
+                    const iframe = wrapper.querySelector('iframe');
+                    const loader = wrapper.querySelector('.embed-loader');
+                    const fallback = wrapper.querySelector('.embed-fallback');
+                    const fallbackLink = fallback.querySelector('.fallback-link');
+
+                    const siteUrl = btn.dataset.url;
+                    const isEmbed = btn.dataset.embed === 'true';
+
+                    // Set fallback link
+                    if (fallbackLink) {
+                        fallbackLink.href = siteUrl;
+                    }
+
+                    // Track if iframe has been loaded yet
+                    let iframeLoaded = false;
+                    let iframeError = false;
+
+                    // Iframe load handler
+                    iframe.addEventListener('load', function () {
+                        // If the iframe loaded successfully, hide loader
+                        loader.classList.add('hidden');
+                        iframeLoaded = true;
+                        // Check if there's actual content (iframe may have loaded error page)
+                        try {
+                            // If we can access the iframe content, it's loaded
+                            const doc = iframe.contentDocument || iframe.contentWindow?.document;
+                            if (doc && doc.body && doc.body.innerHTML.trim().length > 0) {
+                                // Content loaded
+                            } else {
+                                // Empty content — might be blocked
+                                if (!iframeError) {
+                                    iframeError = true;
+                                    fallback.style.display = 'block';
+                                    iframe.style.display = 'none';
+                                    loader.classList.add('hidden');
+                                }
+                            }
+                        } catch (_) {
+                            // Cross-origin: we can't access content, but it loaded
+                            // This is normal for most sites — hide loader
+                            loader.classList.add('hidden');
+                        }
+                    });
+
+                    // Iframe error handler
+                    iframe.addEventListener('error', function () {
+                        iframeError = true;
+                        loader.classList.add('hidden');
+                        fallback.style.display = 'block';
+                        iframe.style.display = 'none';
+                    });
+
+                    // Timeout: if iframe doesn't load within 8s, show fallback
+                    let loadTimeout = setTimeout(() => {
+                        if (!iframeLoaded && !iframeError) {
+                            // Check if iframe has a src and not loaded
+                            if (iframe.src && iframe.src !== '') {
+                                // Show fallback after timeout
+                                fallback.style.display = 'block';
+                                iframe.style.display = 'none';
+                                loader.classList.add('hidden');
+                                iframeError = true;
+                            }
+                        }
+                    }, 8000);
+
+                    // Button click
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        if (isEmbed) {
+                            // ---- EMBED MODE ----
+                            const isOpen = wrapper.classList.contains('open');
+
+                            if (isOpen) {
+                                // Close
+                                wrapper.classList.remove('open');
+                                btn.classList.remove('is-open');
+                                btn.innerHTML = `<i class="fas fa-external-link-alt"></i> Open`;
+                                // Optionally unload iframe to save resources
+                                // iframe.src = '';
+                                // loader.classList.remove('hidden');
+                                // iframeLoaded = false;
+                                // iframeError = false;
+                                // fallback.style.display = 'none';
+                                // iframe.style.display = 'block';
+                                // clearTimeout(loadTimeout);
+                            } else {
+                                // Open — load the iframe
+                                wrapper.classList.add('open');
+                                btn.classList.add('is-open');
+                                btn.innerHTML = `<i class="fas fa-compress-alt"></i> Close`;
+
+                                // Reset state
+                                iframeLoaded = false;
+                                iframeError = false;
+                                fallback.style.display = 'none';
+                                iframe.style.display = 'block';
+                                loader.classList.remove('hidden');
+
+                                // Set iframe source
+                                iframe.src = siteUrl;
+
+                                // Reset timeout
+                                clearTimeout(loadTimeout);
+                                loadTimeout = setTimeout(() => {
+                                    if (!iframeLoaded && !iframeError) {
+                                        if (iframe.src && iframe.src !== '') {
+                                            fallback.style.display = 'block';
+                                            iframe.style.display = 'none';
+                                            loader.classList.add('hidden');
+                                            iframeError = true;
+                                        }
+                                    }
+                                }, 8000);
+
+                                // Scroll to the card on mobile
+                                if (window.innerWidth < 640) {
+                                    setTimeout(() => {
+                                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }, 300);
+                                }
+                            }
+                        } else {
+                            // ---- NEW TAB MODE ----
+                            window.open(siteUrl, '_blank', 'noopener,noreferrer');
+                        }
+                    });
+
+                    // Cleanup timeout on card removal (not strictly needed but good practice)
+                    card._timeout = loadTimeout;
+                });
             }
 
-            // ===== SEARCH ACTION =====
+            // ===== SEARCH =====
             function performSearch() {
                 const query = getQuery();
                 if (!query) {
-                    // Focus input with a subtle shake
                     searchInput.style.borderColor = 'var(--accent)';
                     searchInput.focus();
-                    setTimeout(() => {
-                        searchInput.style.borderColor = '';
-                    }, 600);
+                    setTimeout(() => { searchInput.style.borderColor = ''; }, 600);
                     return;
                 }
                 render(query);
@@ -923,28 +1208,20 @@
             function setTheme(theme) {
                 document.documentElement.setAttribute('data-theme', theme);
                 localStorage.setItem('movieportal-theme', theme);
-
-                // Update thumb icon
-                if (theme === 'dark') {
-                    thumbIcon.className = 'fas fa-moon';
-                } else {
-                    thumbIcon.className = 'fas fa-sun';
-                }
+                thumbIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
             }
 
             function toggleTheme() {
                 const current = document.documentElement.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                setTheme(next);
+                setTheme(current === 'dark' ? 'light' : 'dark');
             }
 
             // ===== INIT =====
             function init() {
                 // Theme
-                const initialTheme = getPreferredTheme();
-                setTheme(initialTheme);
+                setTheme(getPreferredTheme());
 
-                // Event listeners
+                // Events
                 searchBtn.addEventListener('click', performSearch);
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -954,7 +1231,7 @@
                 });
                 themeToggle.addEventListener('click', toggleTheme);
 
-                // Auto-search if URL has ?q=something
+                // URL param ?q=...
                 const urlParams = new URLSearchParams(window.location.search);
                 const queryParam = urlParams.get('q');
                 if (queryParam) {
@@ -962,24 +1239,26 @@
                     performSearch();
                 }
 
-                // Focus input on load
+                // Focus
                 if (!queryParam) {
                     setTimeout(() => searchInput.focus(), 300);
                 }
+
+                // Display site count in empty state
+                const emptyCount = document.querySelector('#emptyState strong');
+                if (emptyCount) emptyCount.textContent = SITES.length;
             }
 
-            // ===== KEYBOARD SHORTCUT: Ctrl+K or Cmd+K =====
+            // ===== KEYBOARD SHORTCUTS =====
             document.addEventListener('keydown', (e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                     e.preventDefault();
                     searchInput.focus();
                     searchInput.select();
                 }
-                // Escape to clear
                 if (e.key === 'Escape' && document.activeElement === searchInput) {
                     searchInput.value = '';
                     searchInput.blur();
-                    // Optionally clear results? We'll keep them.
                 }
             });
 
