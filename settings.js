@@ -8,14 +8,14 @@ var AppSettings = {
 
     // 2. Settings for the direct OTT websites (e.g., Netflix)
     unspecificUrls: {
-        embed: false,
+        embed: true,
         showLinks: true,
         showNames: true
     },
 
     // 3. NEW: Settings for all your search websites' Homepages (without the ?s= query)
     baseUrls: {
-        embed: false,     // false is usually better for homepages so they open in a new tab
+        embed: true,     // false is usually better for homepages so they open in a new tab
         showLinks: true,
         showNames: true
     }
