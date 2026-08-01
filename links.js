@@ -8,6 +8,11 @@ var sites = [
         name: 'FullRaces',
         icon: 'fa-solid fa-trophy',
         url: (q) => `https://fullraces.com/search/?q=${q}`
+    },
+    {
+        name: 'KM Movies',
+        icon: 'fa-solid fa-trophy',
+        url: (q) => `https://kmmovies.online/?s=${q}`
     }, 
     {
         name: 'MovieRulz',
