@@ -164,8 +164,40 @@
             // Memory cache for RDB links
             window.cloudLinksCache = { specific: [], unspecific: [] };
 
-            // Manage dynamic settings overrides from Admin UI
-            let activeSettings = JSON.parse(localStorage.getItem('moviePortalSettingsOverrides')) || AppSettings;
+            // ===== INACTIVITY AUTO-LOGOUT SYSTEM =====
+            let inactivityTimer;
+            const INACTIVITY_LIMIT = 30000; // 30 seconds
+
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                // Only track inactivity if the user is currently logged in
+                if (document.body.classList.contains('is-admin')) {
+                    inactivityTimer = setTimeout(() => {
+                        window.logoutAdmin();
+                        console.log("Automatically logged out due to inactivity.");
+                    }, INACTIVITY_LIMIT);
+                }
+            }
+
+            // Listen for user interactions to keep the session alive
+            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+                document.addEventListener(evt, resetInactivityTimer, { passive: true });
+            });
+
+
+            // ===== SETTINGS INITIALIZATION =====
+            const defaultSettings = {
+                specificUrls: { embed: true, showLinks: false, showNames: true },
+                unspecificUrls: { embed: false, showLinks: true, showNames: true }
+            };
+
+            let baseSettings = (typeof AppSettings !== 'undefined' && AppSettings.specificUrls) ? AppSettings : defaultSettings;
+            let activeSettings = JSON.parse(localStorage.getItem('moviePortalSettingsOverrides')) || baseSettings;
+
+            if (!activeSettings || !activeSettings.specificUrls) {
+                activeSettings = defaultSettings;
+                localStorage.setItem('moviePortalSettingsOverrides', JSON.stringify(activeSettings));
+            }
 
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
@@ -188,7 +220,6 @@
             function encodePlus(str) { return str.trim().replace(/\s+/g, '+'); }
             function getQuery() { return searchInput.value.trim(); }
 
-            // Builds result from the IN-MEMORY CLOUD CACHE
             function buildResults(query) {
                 let dynamicLinks = [];
                 let staticLinks = [];
@@ -303,7 +334,7 @@
 
                 if (results.dynamic.length > 0) {
                     resultsHeader.style.display = 'flex';
-                    specificSettingsBar.style.display = ''; // Shows in admin mode via CSS
+                    specificSettingsBar.style.display = '';
                     resultCount.textContent = `(${results.dynamic.length} sources)`;
                     results.dynamic.forEach((item, index) => generateCardHTML(item, index, resultsGrid, activeSettings.specificUrls));
                 } else {
@@ -336,12 +367,13 @@
                 render(query);
             }
 
-            // ===== ADMIN SETTINGS LOGIC =====
+            // ===== ADMIN SLIDER LOGIC =====
             function updateTogglesUI() {
                 document.querySelectorAll('.setting-toggle').forEach(btn => {
                     const section = btn.getAttribute('data-section');
                     const setting = btn.getAttribute('data-setting');
-                    if (activeSettings[section][setting]) {
+
+                    if (activeSettings[section] && activeSettings[section][setting]) {
                         btn.classList.add('active');
                     } else {
                         btn.classList.remove('active');
@@ -351,20 +383,18 @@
 
             document.querySelectorAll('.setting-toggle').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.preventDefault();
                     const section = btn.getAttribute('data-section');
                     const setting = btn.getAttribute('data-setting');
 
-                    // Toggle boolean
-                    activeSettings[section][setting] = !activeSettings[section][setting];
-
-                    // Save to local storage
-                    localStorage.setItem('moviePortalSettingsOverrides', JSON.stringify(activeSettings));
-
-                    updateTogglesUI();
-                    render(getQuery()); // Instantly re-render cards with new settings
+                    if (activeSettings[section]) {
+                        activeSettings[section][setting] = !activeSettings[section][setting];
+                        localStorage.setItem('moviePortalSettingsOverrides', JSON.stringify(activeSettings));
+                        updateTogglesUI();
+                        render(getQuery());
+                    }
                 });
             });
-
 
             // ===== AUTH UI =====
             window.openLoginModal = () => { document.getElementById('loginModal').classList.add('active'); document.getElementById('adminPassword').focus(); };
@@ -376,20 +406,20 @@
             window.verifyLogin = () => {
                 const pass = document.getElementById('adminPassword').value;
                 if (pass === AppAuth.password) {
-                    localStorage.setItem('moviePortalAdmin', 'true');
                     document.body.classList.add('is-admin');
                     closeModal('loginModal');
                     document.getElementById('adminPassword').value = '';
                     updateTogglesUI();
                     render(getQuery());
+                    resetInactivityTimer(); // Start tracking inactivity
                 } else {
                     document.getElementById('loginError').style.display = 'block';
                 }
             };
 
             window.logoutAdmin = () => {
-                localStorage.removeItem('moviePortalAdmin');
                 document.body.classList.remove('is-admin');
+                clearTimeout(inactivityTimer); // Stop tracking inactivity
                 render(getQuery());
             };
 
@@ -444,11 +474,7 @@
                 document.documentElement.setAttribute('data-theme', stored);
                 thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
 
-                if (localStorage.getItem('moviePortalAdmin') === 'true') {
-                    document.body.classList.add('is-admin');
-                }
-
-                updateTogglesUI(); // Initialize admin sliders state
+                updateTogglesUI();
 
                 searchBtn.addEventListener('click', performSearch);
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch());
