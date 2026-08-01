@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🎬 Movie Search Portal</title>
+    <title>🎬Movie Search Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-    <!-- Load Settings and Links BEFORE the main logic -->
+    <!-- Load Settings and Links -->
     <script src="settings.js"></script>
     <script src="links.js"></script>
 
@@ -76,7 +76,8 @@
             flex-direction: column;
             align-items: center;
             padding: 20px 16px 60px;
-            background-image: radial-gradient(ellipse at 10% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+            background-image:
+                radial-gradient(ellipse at 10% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 90% 80%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
             background-attachment: fixed;
         }
@@ -93,6 +94,7 @@
         .bg-ornament span {
             position: absolute;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
             animation: floatOrb 20s ease-in-out infinite alternate;
         }
 
@@ -101,7 +103,6 @@
             height: 500px;
             top: -150px;
             left: -150px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 70%);
             animation-duration: 25s;
         }
 
@@ -176,6 +177,13 @@
             background: linear-gradient(135deg, var(--text-primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         /* ===== THEME TOGGLE ===== */
@@ -188,7 +196,7 @@
             background: var(--bg-secondary);
             box-shadow: inset 0 0 0 1px var(--border-color), var(--shadow);
             cursor: pointer;
-            transition: background var(--transition);
+            transition: background var(--transition), box-shadow var(--transition);
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -206,6 +214,7 @@
             padding: 0 4px;
             font-size: 12px;
             color: var(--text-muted);
+            transition: color var(--transition);
         }
 
         .theme-toggle .toggle-thumb {
@@ -228,6 +237,11 @@
         [data-theme="dark"] .theme-toggle .toggle-thumb {
             transform: translateX(24px);
             background: #fbbf24;
+            box-shadow: 0 2px 12px rgba(251, 191, 36, 0.35);
+        }
+
+        .theme-toggle .toggle-thumb i {
+            font-size: 12px;
         }
 
         [data-theme="light"] .theme-toggle .toggle-thumb i {
@@ -251,7 +265,7 @@
             padding: 6px;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
-            transition: box-shadow var(--transition), border-color var(--transition);
+            transition: box-shadow var(--transition), border-color var(--transition), background var(--transition);
             backdrop-filter: blur(4px);
         }
 
@@ -286,16 +300,22 @@
             font-size: 0.95rem;
             color: #fff;
             cursor: pointer;
-            transition: background var(--transition), transform var(--transition);
+            transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
             display: flex;
             align-items: center;
             gap: 8px;
             font-family: var(--font);
+            white-space: nowrap;
         }
 
         .search-box .search-btn:hover {
             background: var(--accent-hover);
             transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.30);
+        }
+
+        .search-box .search-btn:active {
+            transform: scale(0.97);
         }
 
         .search-tips {
@@ -312,7 +332,10 @@
             background: var(--bg-secondary);
             padding: 2px 8px;
             border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: var(--font);
             border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
 
         /* ===== RESULTS ===== */
@@ -342,18 +365,23 @@
             gap: 8px;
         }
 
-        .results-header h2 span {
-            color: var(--text-muted);
-            font-weight: 400;
-            font-size: 0.9rem;
+        .results-header .count-badge {
+            background: var(--bg-secondary);
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            align-items: start;
             gap: 14px;
             animation: fadeUp 0.5s ease-out;
+            align-items: start;
+            /* Prevents cards stretching when an iframe opens */
         }
 
         @keyframes fadeUp {
@@ -380,9 +408,12 @@
             flex-direction: column;
             gap: 6px;
             position: relative;
+            overflow: hidden;
+            align-self: start;
         }
 
         .result-card:hover {
+            transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
             background: var(--bg-card-hover);
             border-color: var(--accent);
@@ -395,6 +426,7 @@
             font-weight: 600;
             font-size: 0.95rem;
             color: var(--text-primary);
+            position: relative;
             z-index: 1;
         }
 
@@ -427,17 +459,28 @@
             background: var(--bg-primary);
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            font-family: monospace;
+            font-family: 'Monaco', 'Menlo', monospace;
             max-height: 60px;
             overflow-y: auto;
         }
 
+        .result-card .site-url::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .result-card .site-url::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 10px;
+        }
+
+        /* Shared button styling */
+        .result-card .open-btn,
         .result-card .open-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             margin-top: 4px;
-            padding: 8px 14px;
+            padding: 6px 14px;
             border-radius: 8px;
             background: var(--accent);
             color: #fff;
@@ -445,32 +488,45 @@
             font-size: 0.8rem;
             border: none;
             cursor: pointer;
-            transition: background var(--transition);
+            transition: background var(--transition), transform var(--transition);
             text-decoration: none;
             width: fit-content;
+            position: relative;
+            z-index: 1;
             font-family: var(--font);
         }
 
+        .result-card .open-btn:hover,
         .result-card .open-link:hover {
             background: var(--accent-hover);
+            transform: scale(1.03);
         }
 
-        /* EMBED CONTAINER */
-        .embed-container {
+        .result-card .open-btn:active,
+        .result-card .open-link:active {
+            transform: scale(0.96);
+        }
+
+        /* IFRAME WRAPPER */
+        .iframe-wrapper {
+            display: none;
+            /* hidden by default */
             width: 100%;
-            margin-top: 12px;
-            border-radius: 8px;
+            height: 350px;
+            min-height: 150px;
+            resize: vertical;
+            /* Allows user to resize the height */
             overflow: hidden;
-            height: 400px;
-            background: var(--bg-primary);
+            margin-top: 10px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
+            background: var(--bg-primary);
         }
 
-        .embed-container iframe {
+        .iframe-wrapper iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: #fff;
         }
 
         /* ===== EMPTY STATE ===== */
@@ -484,6 +540,7 @@
             font-size: 3rem;
             opacity: 0.3;
             margin-bottom: 16px;
+            display: block;
         }
 
         .empty-state p {
@@ -493,34 +550,52 @@
             line-height: 1.6;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
+            body {
+                padding: 12px 12px 40px;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+                padding: 4px;
+                gap: 8px;
+            }
+
             .results-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 
 <body>
-
-    <div class="bg-ornament" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="bg-ornament" aria-hidden="true">
+        <span></span><span></span><span></span>
+    </div>
 
     <header class="app-header">
         <div class="logo-area">
             <span class="logo-icon">🎬</span>
             <span class="logo-text">MoviePortal</span>
         </div>
-        <button class="theme-toggle" id="themeToggle">
-            <span class="toggle-track">
-                <span><i class="fas fa-sun" style="font-size:11px;"></i></span>
-                <span><i class="fas fa-moon" style="font-size:11px;"></i></span>
-                <span class="toggle-thumb" id="toggleThumb"><i class="fas fa-sun" id="thumbIcon"></i></span>
-            </span>
-        </button>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle">
+                <span class="toggle-track">
+                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-sun"></i></span>
+                    <span style="display:flex;align-items:center;gap:2px;"><i class="fas fa-moon"></i></span>
+                    <span class="toggle-thumb" id="toggleThumb"><i class="fas fa-sun" id="thumbIcon"></i></span>
+                </span>
+            </button>
+        </div>
     </header>
 
     <section class="search-section">
@@ -529,7 +604,7 @@
             <button class="search-btn" id="searchBtn"><i class="fas fa-search"></i> Search</button>
         </div>
         <div class="search-tips">
-            <i class="fas fa-lightbulb"></i> Press <kbd>Enter</kbd> to search
+            <i class="fas fa-lightbulb"></i> Press <kbd>Enter</kbd> to search. Results act based on settings.
         </div>
     </section>
 
@@ -537,8 +612,11 @@
         <div class="results-header">
             <h2 id="resultsTitle"><i class="fas fa-link" style="opacity:0.5;"></i> Search Results <span
                     id="resultCount"></span></h2>
+            <span class="count-badge" id="countBadge">0 sites</span>
         </div>
+
         <div class="results-grid" id="resultsGrid"></div>
+
         <div class="empty-state" id="emptyState">
             <i class="fas fa-film"></i>
             <p>Type a movie name above and hit Search.</p>
@@ -554,115 +632,140 @@
             const resultsGrid = document.getElementById('resultsGrid');
             const emptyState = document.getElementById('emptyState');
             const resultCount = document.getElementById('resultCount');
+            const countBadge = document.getElementById('countBadge');
             const themeToggle = document.getElementById('themeToggle');
             const thumbIcon = document.getElementById('thumbIcon');
 
-            function encodePlus(str) {
-                return str.trim().replace(/\s+/g, '+');
+            // Encode string for query URLs
+            function encodePlus(str) { return str.trim().replace(/\s+/g, '+'); }
+
+            function getQuery() { return searchInput.value.trim(); }
+
+            // Generates site details using the globally available `sites` from links.js
+            function buildResults(query) {
+                if (!query) return [];
+                const plusQuery = encodePlus(query);
+                return sites.map(site => ({
+                    name: site.name,
+                    icon: site.icon,
+                    url: site.url(plusQuery)
+                }));
             }
 
-            function render(query) {
-                // Ensure sites array from links.js is available
-                if (typeof sites === 'undefined') {
-                    alert('Error: sites data from links.js is missing.');
-                    return;
-                }
+            // Global function to handle embed toggling
+            window.toggleEmbed = function (btnElement, embedUrl) {
+                const card = btnElement.closest('.result-card');
+                const wrapper = card.querySelector('.iframe-wrapper');
+                const iframe = wrapper.querySelector('iframe');
 
+                if (wrapper.style.display === 'block') {
+                    // Close the embed
+                    wrapper.style.display = 'none';
+                    iframe.src = '';
+                    btnElement.innerHTML = '<i class="fas fa-external-link-alt"></i> Open';
+                } else {
+                    // Open the embed
+                    wrapper.style.display = 'block';
+                    iframe.src = embedUrl;
+                    btnElement.innerHTML = '<i class="fas fa-times"></i> Close';
+                }
+            };
+
+            function render(query) {
+                const results = buildResults(query);
                 resultsGrid.innerHTML = '';
 
-                if (!query) {
+                if (results.length === 0) {
                     emptyState.classList.remove('hidden');
                     resultsGrid.classList.add('hidden');
                     resultCount.textContent = '';
+                    countBadge.textContent = '0 sites';
                     return;
                 }
 
-                const plusQuery = encodePlus(query);
                 emptyState.classList.add('hidden');
                 resultsGrid.classList.remove('hidden');
-                resultCount.textContent = `(${sites.length})`;
+                resultCount.textContent = `(${results.length})`;
+                countBadge.textContent = `${results.length} sites`;
 
-                sites.forEach((site, index) => {
+                results.forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'result-card';
                     card.style.animationDelay = `${index * 40}ms`;
 
-                    const finalUrl = site.url(plusQuery);
+                    // Generate clean URL for display purposes
+                    let displayUrl = item.url;
+                    try {
+                        const urlObj = new URL(item.url);
+                        displayUrl = (urlObj.hostname.replace('www.', '') + urlObj.pathname + urlObj.search).substring(0, 50) + '...';
+                    } catch (_) { }
 
-                    // Generate UI elements conditionally based on settings.js
-                    const nameHtml = appSettings.showNames ? `<span class="site-name">${site.name}</span>` : '';
-                    const urlHtml = appSettings.showLinks ? `<div class="site-url" title="${finalUrl}">${finalUrl}</div>` : '';
+                    // Conditionally create blocks based on AppSettings from settings.js
+                    const nameHtml = AppSettings.showNames
+                        ? `<span class="site-name">${item.name}</span>`
+                        : ``;
 
-                    // Action button logic (Embed vs New Tab)
+                    const urlHtml = AppSettings.showLinks
+                        ? `<div class="site-url" title="${item.url}">${displayUrl}</div>`
+                        : ``;
+
                     let actionHtml = '';
-                    if (appSettings.embed) {
-                        actionHtml = `<button class="open-link embed-btn" data-url="${finalUrl}"><i class="fas fa-chevron-down"></i> Open Here</button>`;
+                    let embedContainer = '';
+
+                    if (AppSettings.embed) {
+                        // Resizable iframe wrapper injected at bottom of card
+                        actionHtml = `<button class="open-btn" onclick="toggleEmbed(this, '${item.url}')"><i class="fas fa-external-link-alt"></i> Open</button>`;
+                        embedContainer = `<div class="iframe-wrapper"><iframe loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms"></iframe></div>`;
                     } else {
-                        actionHtml = `<a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="open-link"><i class="fas fa-external-link-alt"></i> Open</a>`;
+                        // Classic anchor tag targeting a new tab
+                        actionHtml = `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="open-link"><i class="fas fa-external-link-alt"></i> Open</a>`;
                     }
 
                     card.innerHTML = `
                         <div class="site-icon">
-                            <i class="${site.icon}"></i>
+                            <i class="${item.icon}"></i>
                             ${nameHtml}
                         </div>
                         ${urlHtml}
                         ${actionHtml}
-                        <div class="embed-container hidden"></div>
+                        ${embedContainer}
                     `;
-
                     resultsGrid.appendChild(card);
                 });
             }
 
-            // Embed Button Event Delegation
-            resultsGrid.addEventListener('click', (e) => {
-                const embedBtn = e.target.closest('.embed-btn');
-                if (!embedBtn) return;
-
-                const url = embedBtn.getAttribute('data-url');
-                const card = embedBtn.closest('.result-card');
-                const embedContainer = card.querySelector('.embed-container');
-
-                if (embedContainer.classList.contains('hidden')) {
-                    embedContainer.innerHTML = `<iframe src="${url}"></iframe>`;
-                    embedContainer.classList.remove('hidden');
-                    embedBtn.innerHTML = '<i class="fas fa-chevron-up"></i> Close View';
-                    embedBtn.style.background = 'var(--text-muted)';
-                } else {
-                    embedContainer.innerHTML = '';
-                    embedContainer.classList.add('hidden');
-                    embedBtn.innerHTML = '<i class="fas fa-chevron-down"></i> Open Here';
-                    embedBtn.style.background = 'var(--accent)';
-                }
-            });
-
             function performSearch() {
-                const query = searchInput.value.trim();
+                const query = getQuery();
                 if (!query) {
+                    searchInput.style.borderColor = 'var(--accent)';
                     searchInput.focus();
+                    setTimeout(() => searchInput.style.borderColor = '', 600);
                     return;
                 }
                 render(query);
             }
 
-            // Theme Handling
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                thumbIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            function toggleTheme() {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('movieportal-theme', next);
+                thumbIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
             }
 
-            themeToggle.addEventListener('click', () => {
-                const current = document.documentElement.getAttribute('data-theme');
-                setTheme(current === 'dark' ? 'light' : 'dark');
-            });
+            function init() {
+                const stored = localStorage.getItem('movieportal-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', stored);
+                thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
 
-            // Init Events
-            searchBtn.addEventListener('click', performSearch);
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') performSearch();
-            });
+                searchBtn.addEventListener('click', performSearch);
+                searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch());
+                themeToggle.addEventListener('click', toggleTheme);
 
+                setTimeout(() => searchInput.focus(), 300);
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
         })();
     </script>
 </body>
