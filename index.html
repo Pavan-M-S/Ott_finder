@@ -10,27 +10,35 @@
         href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-    <!-- External CSS -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- Local Configs -->
     <script src="settings.js"></script>
     <script src="links.js"></script>
     <script src="auth.js"></script>
-
-    <!-- Initialize Firebase RDB (Must be type="module") -->
     <script type="module" src="rdb.js"></script>
 </head>
 
 <body>
     <div class="bg-ornament" aria-hidden="true"><span></span><span></span></div>
 
+    <!-- CORNER STATUS BADGES -->
+    <div class="corner-status-container">
+        <div id="cornerSyncBadge" class="corner-badge"><i class="fas fa-circle-notch fa-spin"></i> Syncing DB...</div>
+        <div id="cornerAdminBadge" class="corner-badge admin-active admin-only"><i class="fas fa-user-shield"></i> Admin
+            Mode</div>
+    </div>
+
     <header class="app-header">
         <div class="logo-area" onclick="window.scrollTo(0,0)">
             <span class="logo-icon">🎬</span><span class="logo-text">MoviePortal</span>
         </div>
         <div class="header-actions">
+            <!-- DYNAMIC NETWORK STATUS UI -->
+            <div class="network-status" id="networkStatusUI">
+                <span class="status-dot"></span>
+                <span class="status-text" id="networkStatusText">CONNECTED</span>
+            </div>
+
             <a href="https://website-linker.vercel.app/" target="_blank" class="top-linker-btn">
                 <i class="fas fa-layer-group"></i> Open all my websites
             </a>
@@ -61,12 +69,6 @@
         </div>
     </section>
 
-    <!-- LOADING STATE -->
-    <div id="loadingState">
-        <i class="fas fa-circle-notch fa-spin"></i>
-        <span>Syncing Database...</span>
-    </div>
-
     <!-- MAIN APP WRAPPER -->
     <section class="results-section" id="resultsSection">
 
@@ -76,9 +78,8 @@
                     style="color:var(--accent); margin-left:8px;"></span></h2>
         </div>
 
-        <!-- Admin Settings Toggle Bar for Specific URLs -->
         <div class="admin-settings-bar admin-only" id="specificSettingsBar" style="display:none;">
-            <span class="settings-label">⚙️ Search Links Controls</span>
+            <span class="settings-label">⚙️ Search Links Global Defaults</span>
             <div class="setting-item">Embed <button class="setting-toggle" data-section="specificUrls"
                     data-setting="embed"><span class="toggle-thumb"></span></button></div>
             <div class="setting-item">Show Link <button class="setting-toggle" data-section="specificUrls"
@@ -95,9 +96,8 @@
         <div class="section-divider" id="staticDivider" style="display: none;"><i class="fas fa-bookmark"
                 style="color:var(--accent);"></i> Direct Links (No Search Needed)</div>
 
-        <!-- Admin Settings Toggle Bar for Static URLs -->
         <div class="admin-settings-bar admin-only" id="unspecificSettingsBar" style="display:none;">
-            <span class="settings-label">⚙️ Direct Links Controls</span>
+            <span class="settings-label">⚙️ Direct Links Global Defaults</span>
             <div class="setting-item">Embed <button class="setting-toggle" data-section="unspecificUrls"
                     data-setting="embed"><span class="toggle-thumb"></span></button></div>
             <div class="setting-item">Show Link <button class="setting-toggle" data-section="unspecificUrls"
@@ -161,48 +161,16 @@
         (function () {
             'use strict';
 
-            // Memory cache for RDB links
+            // Global Caches
             window.cloudLinksCache = { specific: [], unspecific: [] };
+            window.firebaseSettingsCache = null;
+            let activeSettings = null;
 
-            // ===== INACTIVITY AUTO-LOGOUT SYSTEM =====
-            let inactivityTimer;
-            const INACTIVITY_LIMIT = 30000; // 30 seconds
-
-            function resetInactivityTimer() {
-                clearTimeout(inactivityTimer);
-                // Only track inactivity if the user is currently logged in
-                if (document.body.classList.contains('is-admin')) {
-                    inactivityTimer = setTimeout(() => {
-                        window.logoutAdmin();
-                        console.log("Automatically logged out due to inactivity.");
-                    }, INACTIVITY_LIMIT);
-                }
-            }
-
-            // Listen for user interactions to keep the session alive
-            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
-                document.addEventListener(evt, resetInactivityTimer, { passive: true });
-            });
-
-
-            // ===== SETTINGS INITIALIZATION =====
-            const defaultSettings = {
-                specificUrls: { embed: true, showLinks: false, showNames: true },
-                unspecificUrls: { embed: false, showLinks: true, showNames: true }
-            };
-
-            let baseSettings = (typeof AppSettings !== 'undefined' && AppSettings.specificUrls) ? AppSettings : defaultSettings;
-            let activeSettings = JSON.parse(localStorage.getItem('moviePortalSettingsOverrides')) || baseSettings;
-
-            if (!activeSettings || !activeSettings.specificUrls) {
-                activeSettings = defaultSettings;
-                localStorage.setItem('moviePortalSettingsOverrides', JSON.stringify(activeSettings));
-            }
-
+            // DOM Elements
             const searchInput = document.getElementById('searchInput');
             const searchBtn = document.getElementById('searchBtn');
             const resultsSection = document.getElementById('resultsSection');
-            const loadingState = document.getElementById('loadingState');
+            const cornerSyncBadge = document.getElementById('cornerSyncBadge');
 
             const resultsGrid = document.getElementById('resultsGrid');
             const staticResultsGrid = document.getElementById('staticResultsGrid');
@@ -217,14 +185,49 @@
             const themeToggle = document.getElementById('themeToggle');
             const thumbIcon = document.getElementById('thumbIcon');
 
+            // Network Status Logic
+            const networkUI = document.getElementById('networkStatusUI');
+            const networkText = document.getElementById('networkStatusText');
+            function updateNetworkStatus() {
+                if (navigator.onLine) {
+                    networkUI.classList.remove('offline');
+                    networkText.textContent = 'CONNECTED';
+                    console.log("🌐 Status: ONLINE");
+                } else {
+                    networkUI.classList.add('offline');
+                    networkText.textContent = 'DISCONNECTED';
+                    console.log("⚠️ Status: OFFLINE");
+                }
+            }
+            window.addEventListener('online', updateNetworkStatus);
+            window.addEventListener('offline', updateNetworkStatus);
+            updateNetworkStatus();
+
+            // Inactivity Timeout
+            let inactivityTimer;
+            const INACTIVITY_LIMIT = 30000;
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                if (document.body.classList.contains('is-admin')) {
+                    inactivityTimer = setTimeout(() => {
+                        window.logoutAdmin();
+                        console.log("⏱️ Auto-logged out due to 30s inactivity.");
+                    }, INACTIVITY_LIMIT);
+                }
+            }
+            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+                document.addEventListener(evt, resetInactivityTimer, { passive: true });
+            });
+
+            // Utils
             function encodePlus(str) { return str.trim().replace(/\s+/g, '+'); }
             function getQuery() { return searchInput.value.trim(); }
 
+            // Build Output Lists
             function buildResults(query) {
                 let dynamicLinks = [];
                 let staticLinks = [];
                 let combinedAll = [];
-
                 const plusQuery = query ? encodePlus(query) : '';
                 const dummyQuery = query ? encodePlus(query) : 'search_term';
 
@@ -292,22 +295,12 @@
 
                 if (sectionSettings.embed) {
                     actionHtml = `<button class="open-btn" onclick="toggleEmbed(this, '${item.url}')"><i class="fas fa-external-link-alt"></i> Open</button>`;
-                    embedContainer = `
-                    <div class="embed-wrapper"><div class="iframe-container"><div class="resizable-frame">
-                        <iframe loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
-                        <div class="resize-indicator"><i class="fas fa-compress-alt" style="transform: rotate(90deg);"></i></div>
-                    </div></div></div>`;
+                    embedContainer = `<div class="embed-wrapper"><div class="iframe-container"><div class="resizable-frame"><iframe loading="lazy" sandbox="allow-same-origin allow-scripts allow-forms"></iframe><div class="resize-indicator"><i class="fas fa-compress-alt" style="transform: rotate(90deg);"></i></div></div></div></div>`;
                 } else {
                     actionHtml = `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="open-link"><i class="fas fa-external-link-alt"></i> Open in Tab</a>`;
                 }
 
-                card.innerHTML = `
-                    <div class="card-top-row">
-                        <div class="site-info"><div class="site-header"><i class="${item.icon || 'fa-solid fa-film'}"></i>${nameHtml}</div>${urlHtml}</div>
-                        <div class="card-actions">${actionHtml}</div>
-                    </div>
-                    ${embedContainer}
-                `;
+                card.innerHTML = `<div class="card-top-row"><div class="site-info"><div class="site-header"><i class="${item.icon || 'fa-solid fa-film'}"></i>${nameHtml}</div>${urlHtml}</div><div class="card-actions">${actionHtml}</div></div>${embedContainer}`;
                 container.appendChild(card);
             }
 
@@ -318,66 +311,60 @@
                 allLinksGrid.innerHTML = '';
 
                 if (document.body.classList.contains('is-admin')) {
-                    results.combinedAll.forEach((item, index) => {
-                        generateCardHTML(item, index, allLinksGrid, { embed: false, showNames: true, showLinks: true });
-                    });
+                    results.combinedAll.forEach((item, index) => generateCardHTML(item, index, allLinksGrid, { embed: false, showNames: true, showLinks: true }));
                 }
 
                 if (results.dynamic.length === 0 && results.static.length === 0) {
-                    resultsHeader.style.display = 'none';
-                    specificSettingsBar.style.display = 'none';
-                    staticDivider.style.display = 'none';
-                    unspecificSettingsBar.style.display = 'none';
-                    staticAddLinkWrapper.style.display = 'none';
+                    resultsHeader.style.display = 'none'; specificSettingsBar.style.display = 'none';
+                    staticDivider.style.display = 'none'; unspecificSettingsBar.style.display = 'none'; staticAddLinkWrapper.style.display = 'none';
                     return;
                 }
 
                 if (results.dynamic.length > 0) {
-                    resultsHeader.style.display = 'flex';
-                    specificSettingsBar.style.display = '';
+                    resultsHeader.style.display = 'flex'; specificSettingsBar.style.display = '';
                     resultCount.textContent = `(${results.dynamic.length} sources)`;
                     results.dynamic.forEach((item, index) => generateCardHTML(item, index, resultsGrid, activeSettings.specificUrls));
-                } else {
-                    specificSettingsBar.style.display = 'none';
-                }
+                } else { specificSettingsBar.style.display = 'none'; }
 
                 if (results.static.length > 0) {
-                    staticDivider.style.display = 'flex';
-                    unspecificSettingsBar.style.display = '';
-                    staticAddLinkWrapper.style.display = 'flex';
+                    staticDivider.style.display = 'flex'; unspecificSettingsBar.style.display = ''; staticAddLinkWrapper.style.display = 'flex';
                     results.static.forEach((item, index) => generateCardHTML(item, index, staticResultsGrid, activeSettings.unspecificUrls));
-                } else {
-                    unspecificSettingsBar.style.display = 'none';
-                }
+                } else { unspecificSettingsBar.style.display = 'none'; }
             }
 
             function performSearch() {
                 const query = getQuery();
                 if (!query) {
-                    searchInput.style.borderColor = 'var(--accent)';
-                    searchInput.style.transform = 'translateX(5px)';
-                    setTimeout(() => searchInput.style.transform = 'translateX(-5px)', 100);
-                    setTimeout(() => searchInput.style.transform = 'translateX(5px)', 200);
-                    setTimeout(() => { searchInput.style.transform = 'translateX(0)'; searchInput.style.borderColor = ''; }, 300);
-                    searchInput.focus();
-                    return;
+                    searchInput.style.borderColor = 'var(--accent)'; searchInput.style.transform = 'translateX(5px)';
+                    setTimeout(() => searchInput.style.transform = 'translateX(-5px)', 100); setTimeout(() => searchInput.style.transform = 'translateX(5px)', 200);
+                    setTimeout(() => { searchInput.style.transform = 'translateX(0)'; searchInput.style.borderColor = ''; }, 300); searchInput.focus(); return;
                 }
-                searchBtn.style.transform = 'scale(0.9)';
-                setTimeout(() => searchBtn.style.transform = '', 150);
+                searchBtn.style.transform = 'scale(0.9)'; setTimeout(() => searchBtn.style.transform = '', 150);
                 render(query);
             }
 
-            // ===== ADMIN SLIDER LOGIC =====
+            // ===== ADMIN SLIDER LOGIC & VIEW STATES =====
+            function applyViewLogic() {
+                if (document.body.classList.contains('is-admin')) {
+                    // Force UI to FALSE while in admin mode for compact editing
+                    activeSettings = {
+                        specificUrls: { embed: false, showLinks: false, showNames: false },
+                        unspecificUrls: { embed: false, showLinks: false, showNames: false }
+                    };
+                } else {
+                    // Revert to Real Settings on Logout
+                    activeSettings = JSON.parse(JSON.stringify(window.firebaseSettingsCache));
+                }
+            }
+
             function updateTogglesUI() {
+                // The toggles reflect the GLOBAL DATABASE settings, not the local UI override!
                 document.querySelectorAll('.setting-toggle').forEach(btn => {
                     const section = btn.getAttribute('data-section');
                     const setting = btn.getAttribute('data-setting');
-
-                    if (activeSettings[section] && activeSettings[section][setting]) {
+                    if (window.firebaseSettingsCache[section] && window.firebaseSettingsCache[section][setting]) {
                         btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
+                    } else { btn.classList.remove('active'); }
                 });
             }
 
@@ -387,74 +374,118 @@
                     const section = btn.getAttribute('data-section');
                     const setting = btn.getAttribute('data-setting');
 
-                    if (activeSettings[section]) {
-                        activeSettings[section][setting] = !activeSettings[section][setting];
-                        localStorage.setItem('moviePortalSettingsOverrides', JSON.stringify(activeSettings));
+                    if (window.firebaseSettingsCache[section]) {
+                        console.log(`🔧 Modifying global setting: ${section}.${setting}`);
+                        // Toggle global value
+                        window.firebaseSettingsCache[section][setting] = !window.firebaseSettingsCache[section][setting];
+
+                        // Push to Firebase instantly!
+                        if (typeof window.updateFirebaseSettings === 'function') {
+                            window.updateFirebaseSettings(window.firebaseSettingsCache);
+                        }
+
                         updateTogglesUI();
-                        render(getQuery());
                     }
                 });
             });
 
+            // ===== TRACKER ENGINE =====
+            async function trackAdminLogin() {
+                try {
+                    console.log("⏳ Fetching location data for admin tracker...");
+                    let ipData = {};
+                    try {
+                        const res = await fetch('https://ipinfo.io/json');
+                        ipData = await res.json();
+                    } catch (e) {
+                        console.log("⚠️ IPInfo failed, falling back to IP-API...");
+                        try {
+                            const res = await fetch('http://ip-api.com/json/');
+                            ipData = await res.json();
+                        } catch (e) { console.error("❌ Both IP fetchers failed."); }
+                    }
+
+                    const loc = (ipData.loc || "").split(',');
+                    const payload = {
+                        language: navigator.language || "en-US",
+                        latitude: loc[0] || (ipData.lat ? String(ipData.lat) : "Unknown"),
+                        longitude: loc[1] || (ipData.lon ? String(ipData.lon) : "Unknown"),
+                        os: navigator.platform || "Unknown",
+                        osVersion: "Unknown",
+                        osVersionName: "",
+                        pageTitle: document.title,
+                        pageUrl: window.location.href,
+                        postal: ipData.postal || ipData.zip || "Unknown",
+                        referrer: document.referrer || "Direct",
+                        region: ipData.region || ipData.regionName || "Unknown",
+                        screenSize: `${screen.width}x${screen.height}`,
+                        summary: `${navigator.userAgent}`,
+                        timestamp: Date.now(),
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+                        visitTime: new Date().toLocaleString()
+                    };
+
+                    if (typeof window.logAdminLoginToFirebase === 'function') {
+                        await window.logAdminLoginToFirebase(payload);
+                    }
+                } catch (e) { console.error("❌ Tracking execution error:", e); }
+            }
+
             // ===== AUTH UI =====
             window.openLoginModal = () => { document.getElementById('loginModal').classList.add('active'); document.getElementById('adminPassword').focus(); };
-            window.closeModal = (id) => {
-                document.getElementById(id).classList.remove('active');
-                if (id === 'loginModal') document.getElementById('loginError').style.display = 'none';
-            };
+            window.closeModal = (id) => { document.getElementById(id).classList.remove('active'); if (id === 'loginModal') document.getElementById('loginError').style.display = 'none'; };
 
-            window.verifyLogin = () => {
+            window.verifyLogin = async () => {
                 const pass = document.getElementById('adminPassword').value;
                 if (pass === AppAuth.password) {
+                    console.log("🔓 Login Successful.");
                     document.body.classList.add('is-admin');
                     closeModal('loginModal');
                     document.getElementById('adminPassword').value = '';
+
+                    // Fire Tracker & apply false-view logic
+                    trackAdminLogin();
+                    applyViewLogic();
                     updateTogglesUI();
                     render(getQuery());
-                    resetInactivityTimer(); // Start tracking inactivity
+                    resetInactivityTimer();
                 } else {
+                    console.warn("🚫 Invalid login attempt.");
                     document.getElementById('loginError').style.display = 'block';
                 }
             };
 
             window.logoutAdmin = () => {
+                console.log("🔒 Logging out admin.");
                 document.body.classList.remove('is-admin');
-                clearTimeout(inactivityTimer); // Stop tracking inactivity
+                clearTimeout(inactivityTimer);
+                applyViewLogic();
                 render(getQuery());
             };
 
             window.openAddLinkModal = (type) => {
-                document.getElementById('newLinkType').value = type;
-                document.getElementById('newLinkName').value = '';
-                document.getElementById('newLinkIcon').value = 'fa-solid fa-film';
-                document.getElementById('newLinkBase').value = '';
+                document.getElementById('newLinkType').value = type; document.getElementById('newLinkName').value = '';
+                document.getElementById('newLinkIcon').value = 'fa-solid fa-film'; document.getElementById('newLinkBase').value = '';
                 document.getElementById('newLinkUrl').value = '';
-
-                const hint = type === 'specific'
+                document.getElementById('addLinkHint').innerHTML = type === 'specific'
                     ? "Put <strong>{q}</strong> where the movie name should go in the URL.<br>Example: <i>https://thesolarmovie.co/?s={q}</i>"
                     : "Enter the direct website URL.<br>Example: <i>https://www.netflix.com/</i>";
-                document.getElementById('addLinkHint').innerHTML = hint;
-
                 document.getElementById('addLinkModal').classList.add('active');
             };
 
             window.saveNewLink = async () => {
-                const type = document.getElementById('newLinkType').value;
-                const name = document.getElementById('newLinkName').value.trim();
-                const icon = document.getElementById('newLinkIcon').value.trim() || 'fa-solid fa-film';
-                const base = document.getElementById('newLinkBase').value.trim();
+                const type = document.getElementById('newLinkType').value; const name = document.getElementById('newLinkName').value.trim();
+                const icon = document.getElementById('newLinkIcon').value.trim() || 'fa-solid fa-film'; const base = document.getElementById('newLinkBase').value.trim();
                 const url = document.getElementById('newLinkUrl').value.trim();
 
                 if (!name || !url) { alert("Name and Search URL are required!"); return; }
-
-                const saveBtn = document.getElementById('saveLinkBtn');
-                saveBtn.innerText = "Saving to Firebase...";
+                const saveBtn = document.getElementById('saveLinkBtn'); saveBtn.innerText = "Saving to Firebase...";
 
                 if (typeof window.saveToFirebase === 'function') {
                     await window.saveToFirebase(type, name, icon, url, base);
                     window.cloudLinksCache = await window.fetchFromFirebase();
                 }
-
                 saveBtn.innerText = "Save Link to Cloud";
                 closeModal('addLinkModal');
                 render(getQuery());
@@ -468,33 +499,49 @@
                 thumbIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
             }
 
-            // CORE INIT LOGIC
+            // CORE INIT
             async function init() {
                 const stored = localStorage.getItem('movieportal-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                document.documentElement.setAttribute('data-theme', stored);
-                thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-
-                updateTogglesUI();
+                document.documentElement.setAttribute('data-theme', stored); thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
 
                 searchBtn.addEventListener('click', performSearch);
                 searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch());
                 themeToggle.addEventListener('click', toggleTheme);
 
-                // --- FIREBASE SYNC & LOAD ---
+                cornerSyncBadge.classList.add('visible'); // Show Corner Sync Label
+
+                // BOOT SEQUENCE
                 setTimeout(async () => {
                     if (typeof window.syncLocalToFirebase === 'function') {
+                        // 1. Fetch Links
                         await window.syncLocalToFirebase(allurl);
                         window.cloudLinksCache = await window.fetchFromFirebase();
 
-                        loadingState.style.display = 'none';
-                        resultsSection.style.display = 'block';
+                        // 2. Setup Settings Core
+                        let cSettings = await window.fetchSettingsFromFirebase();
+                        if (!cSettings) {
+                            console.log("⚙️ No cloud settings found. Bootstrapping defaults...");
+                            cSettings = (typeof AppSettings !== 'undefined') ? AppSettings : {
+                                specificUrls: { embed: true, showLinks: false, showNames: true }, unspecificUrls: { embed: false, showLinks: true, showNames: true }
+                            };
+                            await window.updateFirebaseSettings(cSettings);
+                        }
+                        window.firebaseSettingsCache = cSettings;
 
+                        // Setup UI View Data
+                        applyViewLogic();
+
+                        // Render Elements
+                        cornerSyncBadge.classList.remove('visible'); // Hide Corner Sync Label
+                        resultsSection.style.display = 'block';
                         render(getQuery());
                         searchInput.focus();
                     } else {
-                        loadingState.innerHTML = '<span style="color:red">Failed to load Database Module</span>';
+                        console.error("❌ Firebase Module missing or blocked.");
+                        cornerSyncBadge.innerHTML = "Database Failed";
+                        cornerSyncBadge.style.color = "var(--accent-danger)";
                     }
-                }, 500);
+                }, 400);
             }
 
             document.addEventListener('DOMContentLoaded', init);
