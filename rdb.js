@@ -1,15 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG
+/// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDgIc8TL1Fo8YubnvDoq54wIUzglUfyTcU",
+  authDomain: "my-projects-21980.firebaseapp.com",
+  databaseURL: "https://my-projects-21980-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "my-projects-21980",
+  storageBucket: "my-projects-21980.firebasestorage.app",
+  messagingSenderId: "44660039234",
+  appId: "1:44660039234:web:a1c4f8484d92ae792197db",
+  measurementId: "G-XFJLB900ZT"
 };
 
 const app = initializeApp(firebaseConfig);
