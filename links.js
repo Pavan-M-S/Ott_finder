@@ -19,6 +19,24 @@ var specificurl = [
         baseUrl: 'https://watchfullmovies.online/'
     },
     {
+        name: 'HD Fun',
+        icon: 'fa-solid fa-film',
+        url: (q) => `https://hdfun.in/search?type=categories&q=${q}`,
+        baseUrl: 'https://hdfun.in/'
+    },
+    {
+        name: 'Filmy Zilla',
+        icon: 'fa-solid fa-film',
+        url: (q) => `https://search.brave.com/search?q=${q}+site%3Awww.filmyzilla52.com`,
+        baseUrl: 'https://www.filmyzilla52.com/'
+    },
+    {
+        name: 'Movies Tamil',
+        icon: 'fa-solid fa-film',
+        url: (q) => `https://search.brave.com/search?q=${q}+site%3Amoviesdatamil.net`,
+        baseUrl: 'https://moviesdatamil.net/'
+    },
+    {
         name: 'Films Look',
         icon: 'fa-solid fa-film',
         url: (q) => `https://filmslook.com/search/?s=${q}`,
