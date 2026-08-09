@@ -114,7 +114,6 @@ body {
 /* NETWORK STATUS BAR */
 .network-status {
     background: #111b2b;
-    /* Matching requested image */
     padding: 6px 14px;
     border-radius: 20px;
     display: inline-flex;
@@ -202,6 +201,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 /* BUTTONS & TOGGLES */
@@ -832,11 +832,161 @@ body.is-admin #loginBtnUI {
     display: none !important;
 }
 
+/* ===== CONTACT SECTION (Match Cyan/Navy Design) ===== */
+.contact-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 60px auto 20px;
+    padding: 40px 30px;
+    background: rgba(15, 23, 42, 0.5);
+    /* Deep navy */
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    z-index: 2;
+    position: relative;
+}
+
+[data-theme="light"] .contact-section {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+.contact-info {
+    color: var(--text-primary);
+}
+
+.contact-eyebrow {
+    color: #00d28a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+}
+
+.contact-info h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.contact-desc {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+}
+
+.contact-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.contact-subdesc {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+}
+
+.contact-details {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact-details li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.contact-details i {
+    color: #00d28a;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.contact-form-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-form-wrapper input,
+.contact-form-wrapper textarea {
+    width: 100%;
+    background: rgba(30, 41, 59, 0.6);
+    /* Dark input fields */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+[data-theme="light"] .contact-form-wrapper input,
+[data-theme="light"] .contact-form-wrapper textarea {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.contact-form-wrapper input::placeholder,
+.contact-form-wrapper textarea::placeholder {
+    color: #64748b;
+}
+
+.contact-form-wrapper input:focus,
+.contact-form-wrapper textarea:focus {
+    border-color: #00d28a;
+    box-shadow: 0 0 0 2px rgba(0, 210, 138, 0.2);
+}
+
+.contact-submit-btn {
+    background: #00e699;
+    color: #0f172a;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 24px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    width: fit-content;
+    transition: all var(--transition);
+    margin-top: 5px;
+}
+
+.contact-submit-btn:hover:not(:disabled) {
+    background: #00ffaa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 230, 153, 0.3);
+}
+
+.contact-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 /* FOOTER */
 .app-footer {
     width: 100%;
     text-align: center;
-    padding: 60px 20px 30px;
+    padding: 30px 20px 30px;
     margin-top: auto;
     position: relative;
     z-index: 2;
@@ -856,7 +1006,16 @@ body.is-admin #loginBtnUI {
     font-weight: 400;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .contact-section {
+        padding: 30px 20px;
+    }
+
     .results-grid {
         grid-template-columns: 1fr;
     }

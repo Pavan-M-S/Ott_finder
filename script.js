@@ -3,7 +3,6 @@
 // ================================================================
 function getCompleteBrowserInfo() {
     const ua = navigator.userAgent;
-    const uaLower = ua.toLowerCase();
     let browser = { name: 'Unknown', version: 'Unknown', engine: 'Unknown' };
 
     if (ua.indexOf('Edg/') > -1) { browser.name = 'Microsoft Edge'; browser.version = ua.match(/Edg\/([\d.]+)/)?.[1] || 'Unknown'; browser.engine = 'Chromium'; }
@@ -39,8 +38,6 @@ function getCompleteBrowserInfo() {
     // Global Caches
     window.cloudLinksCache = { specific: [], unspecific: [] };
     window.firebaseSettingsCache = null;
-
-    // View state settings manager
     let adminOverrides = null;
 
     // DOM Elements
@@ -48,9 +45,11 @@ function getCompleteBrowserInfo() {
     const searchBtn = document.getElementById('searchBtn');
     const resultsSection = document.getElementById('resultsSection');
     const cornerSyncBadge = document.getElementById('cornerSyncBadge');
+
     const resultsGrid = document.getElementById('resultsGrid');
     const staticResultsGrid = document.getElementById('staticResultsGrid');
     const allLinksGrid = document.getElementById('allLinksGrid');
+
     const resultsHeader = document.getElementById('resultsHeader');
     const staticDivider = document.getElementById('staticDivider');
     const specificSettingsBar = document.getElementById('specificSettingsBar');
@@ -60,7 +59,7 @@ function getCompleteBrowserInfo() {
     const themeToggle = document.getElementById('themeToggle');
     const thumbIcon = document.getElementById('thumbIcon');
 
-    // Network Status Logic
+    // ===== NETWORK STATUS =====
     const networkUI = document.getElementById('networkStatusUI');
     const networkText = document.getElementById('networkStatusText');
     function updateNetworkStatus() {
@@ -76,7 +75,7 @@ function getCompleteBrowserInfo() {
     window.addEventListener('offline', updateNetworkStatus);
     updateNetworkStatus();
 
-    // Inactivity Timeout (30 seconds)
+    // ===== INACTIVITY AUTO-LOGOUT (30s) =====
     let inactivityTimer;
     const INACTIVITY_LIMIT = 30000;
     function resetInactivityTimer() {
@@ -92,14 +91,12 @@ function getCompleteBrowserInfo() {
         document.addEventListener(evt, resetInactivityTimer, { passive: true });
     });
 
+    // ===== RENDERING LOGIC =====
     function encodePlus(str) { return str.trim().replace(/\s+/g, '+'); }
     function getQuery() { return searchInput.value.trim(); }
 
-    // Active View Settings Engine (Handles Admin vs Public view logic)
     function getViewSettings() {
-        if (document.body.classList.contains('is-admin') && adminOverrides) {
-            return adminOverrides;
-        }
+        if (document.body.classList.contains('is-admin') && adminOverrides) { return adminOverrides; }
         return window.firebaseSettingsCache || (typeof AppSettings !== 'undefined' ? AppSettings : {
             specificUrls: { embed: true, showLinks: false, showNames: true },
             unspecificUrls: { embed: false, showLinks: true, showNames: true }
@@ -240,16 +237,12 @@ function getCompleteBrowserInfo() {
             const setting = btn.getAttribute('data-setting');
 
             console.log(`🔧 Admin updated global setting: ${section} > ${setting}`);
-
-            // 1. Toggle global state
             window.firebaseSettingsCache[section][setting] = !window.firebaseSettingsCache[section][setting];
 
-            // 2. Sync admin override so Admin immediately sees the result
             if (adminOverrides && adminOverrides[section]) {
                 adminOverrides[section][setting] = window.firebaseSettingsCache[section][setting];
             }
 
-            // 3. Push to Firebase instantly
             if (typeof window.updateFirebaseSettings === 'function') {
                 window.updateFirebaseSettings(window.firebaseSettingsCache);
             }
@@ -267,7 +260,6 @@ function getCompleteBrowserInfo() {
             let ipData = {};
 
             try {
-                // Using the specific token requested
                 const res = await fetch('https://ipinfo.io/json?token=fd9d2987ec82ec');
                 ipData = await res.json();
             } catch (e) {
@@ -280,6 +272,7 @@ function getCompleteBrowserInfo() {
 
             const now = new Date();
             const pad = (n) => String(n).padStart(2, '0');
+            // Formats exact timestamp required: 02-52-21-30-07-2026
             const formattedTimestamp = `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}-${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
 
             const payload = {
@@ -332,7 +325,7 @@ function getCompleteBrowserInfo() {
             closeModal('loginModal');
             document.getElementById('adminPassword').value = '';
 
-            // Condense cards by default when logged in (Embed/Link/Name = false)
+            // Condense cards by default when logged in
             adminOverrides = {
                 specificUrls: { embed: false, showLinks: false, showNames: false },
                 unspecificUrls: { embed: false, showLinks: false, showNames: false }
@@ -384,6 +377,44 @@ function getCompleteBrowserInfo() {
         render(getQuery());
     };
 
+    // ===== CONTACT FORM =====
+    window.handleContactSubmit = async function (e) {
+        e.preventDefault();
+        const btn = document.getElementById('contactSubmitBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending...';
+        btn.disabled = true;
+
+        const formData = {
+            name: document.getElementById('contactName').value.trim(),
+            email: document.getElementById('contactEmail').value.trim(),
+            topic: document.getElementById('contactTopic').value.trim(),
+            message: document.getElementById('contactMessage').value.trim(),
+        };
+
+        if (typeof window.submitFeedbackToFirebase === 'function') {
+            const success = await window.submitFeedbackToFirebase(formData);
+            if (success) {
+                btn.innerHTML = 'Message Sent! <i class="fas fa-check"></i>';
+                btn.style.background = '#3b82f6';
+                btn.style.color = '#fff';
+                document.getElementById('contactForm').reset();
+                setTimeout(() => {
+                    btn.innerHTML = originalText; btn.style.background = ''; btn.style.color = ''; btn.disabled = false;
+                }, 4000);
+            } else {
+                btn.innerHTML = 'Error. Try Again.'; btn.style.background = 'var(--accent-danger)'; btn.style.color = '#fff';
+                setTimeout(() => {
+                    btn.innerHTML = originalText; btn.style.background = ''; btn.style.color = ''; btn.disabled = false;
+                }, 4000);
+            }
+        } else {
+            console.error("❌ Firebase module not loaded. Cannot submit form.");
+            btn.innerHTML = 'Database Offline';
+            setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 3000);
+        }
+    };
+
     function toggleTheme() {
         const current = document.documentElement.getAttribute('data-theme');
         const next = current === 'dark' ? 'light' : 'dark';
@@ -392,9 +423,7 @@ function getCompleteBrowserInfo() {
         thumbIcon.className = next === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
     }
 
-    // ================================================================
-    // CORE BOOT SEQUENCE & UNBREAKABLE FALLBACK
-    // ================================================================
+    // ===== CORE BOOT SEQUENCE & FALLBACK =====
     async function init() {
         const stored = localStorage.getItem('movieportal-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', stored); thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
@@ -406,7 +435,6 @@ function getCompleteBrowserInfo() {
         cornerSyncBadge.classList.add('visible');
         let checkAttempts = 0;
 
-        // Boot loader function that safely waits for Firebase or gracefully falls back.
         function bootApp() {
             if (typeof window.syncLocalToFirebase === 'function') {
                 console.log("🚀 Firebase Module detected. Commencing Boot Sequence...");
@@ -432,16 +460,15 @@ function getCompleteBrowserInfo() {
                 })();
             } else {
                 checkAttempts++;
-                if (checkAttempts > 15) { // Stop waiting after 3 seconds
+                if (checkAttempts > 15) {
                     console.error("❌ Firebase failed to load entirely. Entering Offline Mode.");
                     enableOfflineFallback();
                 } else {
-                    setTimeout(bootApp, 200); // Check again in 200ms
+                    setTimeout(bootApp, 200);
                 }
             }
         }
 
-        // Bulletproof Fallback
         function enableOfflineFallback() {
             window.cloudLinksCache = {
                 specific: allurl.specificurl.map(site => ({
@@ -464,14 +491,6 @@ function getCompleteBrowserInfo() {
         function finishBoot() {
             cornerSyncBadge.classList.remove('visible');
             resultsSection.style.display = 'block';
-
-            if (document.body.classList.contains('is-admin')) {
-                adminOverrides = {
-                    specificUrls: { embed: false, showLinks: false, showNames: false },
-                    unspecificUrls: { embed: false, showLinks: false, showNames: false }
-                };
-            }
-
             updateTogglesUI();
             const initQuery = getQuery();
             render(initQuery);
@@ -479,7 +498,7 @@ function getCompleteBrowserInfo() {
             console.log("✅ Boot sequence complete.");
         }
 
-        bootApp(); // Start sequence
+        bootApp();
     }
 
     document.addEventListener('DOMContentLoaded', init);

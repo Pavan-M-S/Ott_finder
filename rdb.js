@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-/// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your exact Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDgIc8TL1Fo8YubnvDoq54wIUzglUfyTcU",
   authDomain: "my-projects-21980.firebaseapp.com",
@@ -19,6 +19,7 @@ const db = getDatabase(app);
 const DB_PATH = 'ott-finder/links';
 const SETTINGS_PATH = 'ott-finder/settings';
 const ADMIN_LOG_PATH = 'ott-finder/admin login';
+const RESPONSES_PATH = 'ott-finder/responses'; // NEW BRANCH
 
 // 1. SYNC LINKS TO FIREBASE
 window.syncLocalToFirebase = async function(localLinks) {
@@ -106,11 +107,28 @@ window.updateFirebaseSettings = async function(newSettings) {
 window.logAdminLoginToFirebase = async function(trackerData, formattedTimestamp) {
     try {
         console.log("⏳ Logging admin session to Firebase...");
-        // Uses the exact timestamp formatting for the node name
         const docRef = ref(db, `${ADMIN_LOG_PATH}/admin-${formattedTimestamp}`);
         await set(docRef, trackerData);
         console.log(`✅ Admin session securely logged under key: admin-${formattedTimestamp}`);
     } catch (e) {
         console.error("❌ Firebase Admin Logging Error:", e);
+    }
+};
+
+// 6. SUBMIT PUBLIC FEEDBACK / CONTACT FORM
+window.submitFeedbackToFirebase = async function(formData) {
+    try {
+        console.log("⏳ Submitting user feedback to Firebase...");
+        const docRef = push(ref(db, RESPONSES_PATH));
+        await set(docRef, {
+            ...formData,
+            timestamp: Date.now(),
+            date: new Date().toLocaleString()
+        });
+        console.log("✅ Feedback submitted successfully!");
+        return true;
+    } catch (e) {
+        console.error("❌ Firebase Feedback Submission Error:", e);
+        return false;
     }
 };
