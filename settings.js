@@ -1,7 +1,7 @@
 var AppSettings = {
     // 1. Settings for the search-based websites WITH your movie query
     specificUrls: {
-        embed: true,
+        embed: false,
         showLinks: false,
         showNames: true
     },

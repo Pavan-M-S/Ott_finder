@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🎬Movie Search Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="style.css" />
-    
+
     <script src="settings.js"></script>
     <script src="links.js"></script>
     <script src="auth.js"></script>
     <script type="module" src="rdb.js"></script>
 </head>
+
 <body>
     <div class="bg-ornament" aria-hidden="true"><span></span><span></span></div>
 
     <!-- CORNER STATUS BADGES -->
     <div class="corner-status-container">
         <div id="cornerSyncBadge" class="corner-badge"><i class="fas fa-circle-notch fa-spin"></i> Syncing DB...</div>
-        <div id="cornerAdminBadge" class="corner-badge admin-active admin-only"><i class="fas fa-user-shield"></i> Admin Mode</div>
+        <div id="cornerAdminBadge" class="corner-badge admin-active admin-only"><i class="fas fa-user-shield"></i> Admin
+            Mode</div>
     </div>
 
     <header class="app-header">
@@ -38,16 +43,19 @@
                 <i class="fas fa-layer-group"></i> Open all my websites
             </a>
 
-            <button id="loginBtnUI" class="top-linker-btn" onclick="openLoginModal()" style="border-color: var(--accent);">
+            <button id="loginBtnUI" class="top-linker-btn" onclick="openLoginModal()"
+                style="border-color: var(--accent);">
                 <i class="fas fa-lock"></i> Login
             </button>
-            <button class="top-linker-btn admin-only" onclick="logoutAdmin()" style="border-color: var(--accent-danger); color: var(--accent-danger);">
+            <button class="top-linker-btn admin-only" onclick="logoutAdmin()"
+                style="border-color: var(--accent-danger); color: var(--accent-danger);">
                 <i class="fas fa-unlock"></i> Logout
             </button>
-            
+
             <button class="theme-toggle" id="themeToggle">
                 <span class="toggle-track">
-                    <i class="fas fa-sun" style="font-size: 11px;"></i><i class="fas fa-moon" style="font-size: 11px;"></i>
+                    <i class="fas fa-sun" style="font-size: 11px;"></i><i class="fas fa-moon"
+                        style="font-size: 11px;"></i>
                     <span class="toggle-thumb" id="toggleThumb"><i class="fas fa-sun" id="thumbIcon"></i></span>
                 </span>
             </button>
@@ -63,37 +71,49 @@
 
     <!-- MAIN APP WRAPPER -->
     <section class="results-section" id="resultsSection">
-        
+
         <!-- 1. SEARCH SPECIFIC LINKS -->
         <div class="results-header" id="resultsHeader" style="display: none;">
-            <h2 id="resultsTitle">Search Results <span id="resultCount" style="color:var(--accent); margin-left:8px;"></span></h2>
+            <h2 id="resultsTitle">Search Results <span id="resultCount"
+                    style="color:var(--accent); margin-left:8px;"></span></h2>
         </div>
-        
+
         <div class="admin-settings-bar admin-only" id="specificSettingsBar" style="display:none;">
             <span class="settings-label">⚙️ Search Links Global Defaults</span>
-            <div class="setting-item">Embed <button class="setting-toggle" data-section="specificUrls" data-setting="embed"><span class="toggle-thumb"></span></button></div>
-            <div class="setting-item">Show Link <button class="setting-toggle" data-section="specificUrls" data-setting="showLinks"><span class="toggle-thumb"></span></button></div>
-            <div class="setting-item">Show Name <button class="setting-toggle" data-section="specificUrls" data-setting="showNames"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Embed <button class="setting-toggle" data-section="specificUrls"
+                    data-setting="embed"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Show Link <button class="setting-toggle" data-section="specificUrls"
+                    data-setting="showLinks"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Show Name <button class="setting-toggle" data-section="specificUrls"
+                    data-setting="showNames"><span class="toggle-thumb"></span></button></div>
         </div>
-        
+
         <div class="results-grid" id="resultsGrid"></div>
-        <div class="add-link-wrapper admin-only"><button class="add-link-btn" onclick="openAddLinkModal('specific')"><i class="fas fa-plus"></i> Add Search Link</button></div>
-        
+        <div class="add-link-wrapper admin-only"><button class="add-link-btn" onclick="openAddLinkModal('specific')"><i
+                    class="fas fa-plus"></i> Add Search Link</button></div>
+
         <!-- 2. DIRECT (STATIC) LINKS -->
-        <div class="section-divider" id="staticDivider" style="display: none;"><i class="fas fa-bookmark" style="color:var(--accent);"></i> Direct Links (No Search Needed)</div>
-        
+        <div class="section-divider" id="staticDivider" style="display: none;"><i class="fas fa-bookmark"
+                style="color:var(--accent);"></i> Direct Links (No Search Needed)</div>
+
         <div class="admin-settings-bar admin-only" id="unspecificSettingsBar" style="display:none;">
             <span class="settings-label">⚙️ Direct Links Global Defaults</span>
-            <div class="setting-item">Embed <button class="setting-toggle" data-section="unspecificUrls" data-setting="embed"><span class="toggle-thumb"></span></button></div>
-            <div class="setting-item">Show Link <button class="setting-toggle" data-section="unspecificUrls" data-setting="showLinks"><span class="toggle-thumb"></span></button></div>
-            <div class="setting-item">Show Name <button class="setting-toggle" data-section="unspecificUrls" data-setting="showNames"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Embed <button class="setting-toggle" data-section="unspecificUrls"
+                    data-setting="embed"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Show Link <button class="setting-toggle" data-section="unspecificUrls"
+                    data-setting="showLinks"><span class="toggle-thumb"></span></button></div>
+            <div class="setting-item">Show Name <button class="setting-toggle" data-section="unspecificUrls"
+                    data-setting="showNames"><span class="toggle-thumb"></span></button></div>
         </div>
 
         <div class="results-grid" id="staticResultsGrid"></div>
-        <div class="add-link-wrapper admin-only" id="staticAddLinkWrapper" style="display:none;"><button class="add-link-btn" onclick="openAddLinkModal('unspecific')"><i class="fas fa-plus"></i> Add Direct Link</button></div>
+        <div class="add-link-wrapper admin-only" id="staticAddLinkWrapper" style="display:none;"><button
+                class="add-link-btn" onclick="openAddLinkModal('unspecific')"><i class="fas fa-plus"></i> Add Direct
+                Link</button></div>
 
         <!-- 3. ALL LINKS (ADMIN) -->
-        <div class="section-divider admin-only"><i class="fas fa-globe" style="color:var(--accent);"></i> All Database Links (Admin view)</div>
+        <div class="section-divider admin-only"><i class="fas fa-globe" style="color:var(--accent);"></i> All Database
+            Links (Admin view)</div>
         <div class="results-grid admin-only grid-override" id="allLinksGrid"></div>
     </section>
 
@@ -103,10 +123,12 @@
             <div class="contact-info">
                 <h5 class="contact-eyebrow">GET IN TOUCH</h5>
                 <h2>Contact MoviePortal</h2>
-                <p class="contact-desc">Have questions about adding links, reporting broken sites, or requesting custom integrations? Reach out — we respond within 24 hours.</p>
+                <p class="contact-desc">Have questions about adding links, reporting broken sites, or requesting custom
+                    integrations? Reach out — we respond within 24 hours.</p>
 
                 <h3>Let’s talk movies</h3>
-                <p class="contact-subdesc">Whether you're a cinephile, developer, or systems integrator — we'd love to hear from you. Tell us about your favorite features or new site requests.</p>
+                <p class="contact-subdesc">Whether you're a cinephile, developer, or systems integrator — we'd love to
+                    hear from you. Tell us about your favorite features or new site requests.</p>
 
                 <ul class="contact-details">
                     <li><i class="fas fa-envelope"></i> pavan310512@gmail.com</li>
@@ -119,7 +141,8 @@
                     <input type="text" id="contactName" placeholder="Your name" required />
                     <input type="email" id="contactEmail" placeholder="Email address" required />
                     <input type="text" id="contactTopic" placeholder="Topic / Website request" required />
-                    <textarea id="contactMessage" placeholder="Tell us about your feedback or issue..." rows="5" required></textarea>
+                    <textarea id="contactMessage" placeholder="Tell us about your feedback or issue..." rows="5"
+                        required></textarea>
                     <button type="submit" id="contactSubmitBtn" class="contact-submit-btn">Send Message &rarr;</button>
                 </form>
             </div>
@@ -135,10 +158,13 @@
     <div class="modal-overlay" id="loginModal">
         <div class="modal-box">
             <div class="modal-header">
-                Admin Login <button class="close-modal" onclick="closeModal('loginModal')"><i class="fas fa-times"></i></button>
+                Admin Login <button class="close-modal" onclick="closeModal('loginModal')"><i
+                        class="fas fa-times"></i></button>
             </div>
-            <input type="password" id="adminPassword" class="modal-input" placeholder="Enter Password" onkeypress="if(event.key==='Enter') verifyLogin()" />
-            <p id="loginError" style="color:var(--accent-danger); font-size:0.85rem; margin-bottom:8px; display:none;">Incorrect password</p>
+            <input type="password" id="adminPassword" class="modal-input" placeholder="Enter Password"
+                onkeypress="if(event.key==='Enter') verifyLogin()" />
+            <p id="loginError" style="color:var(--accent-danger); font-size:0.85rem; margin-bottom:8px; display:none;">
+                Incorrect password</p>
             <button class="modal-btn" onclick="verifyLogin()">Login</button>
         </div>
     </div>
@@ -147,20 +173,23 @@
     <div class="modal-overlay" id="addLinkModal">
         <div class="modal-box">
             <div class="modal-header">
-                Add New Link <button class="close-modal" onclick="closeModal('addLinkModal')"><i class="fas fa-times"></i></button>
+                Add New Link <button class="close-modal" onclick="closeModal('addLinkModal')"><i
+                        class="fas fa-times"></i></button>
             </div>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;" id="addLinkHint"></p>
-            
+
             <input type="text" id="newLinkName" class="modal-input" placeholder="Website Name (e.g., SolarMovie)" />
             <input type="text" id="newLinkIcon" class="modal-input" placeholder="Icon (default: fa-solid fa-film)" />
-            <input type="text" id="newLinkBase" class="modal-input" placeholder="Base URL (e.g., https://thesolarmovie.co/)" />
+            <input type="text" id="newLinkBase" class="modal-input"
+                placeholder="Base URL (e.g., https://thesolarmovie.co/)" />
             <input type="text" id="newLinkUrl" class="modal-input" placeholder="Search URL format" />
             <input type="hidden" id="newLinkType" />
-            
+
             <button class="modal-btn" id="saveLinkBtn" onclick="saveNewLink()">Save Link to Cloud</button>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>

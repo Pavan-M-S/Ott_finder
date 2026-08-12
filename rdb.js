@@ -1,16 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { get, getDatabase, push, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Your exact Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyDgIc8TL1Fo8YubnvDoq54wIUzglUfyTcU",
-  authDomain: "my-projects-21980.firebaseapp.com",
-  databaseURL: "https://my-projects-21980-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "my-projects-21980",
-  storageBucket: "my-projects-21980.firebasestorage.app",
-  messagingSenderId: "44660039234",
-  appId: "1:44660039234:web:a1c4f8484d92ae792197db",
-  measurementId: "G-XFJLB900ZT"
+    apiKey: "AIzaSyDgIc8TL1Fo8YubnvDoq54wIUzglUfyTcU",
+    authDomain: "my-projects-21980.firebaseapp.com",
+    databaseURL: "https://my-projects-21980-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "my-projects-21980",
+    storageBucket: "my-projects-21980.firebasestorage.app",
+    messagingSenderId: "44660039234",
+    appId: "1:44660039234:web:a1c4f8484d92ae792197db",
+    measurementId: "G-XFJLB900ZT"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -22,7 +22,7 @@ const ADMIN_LOG_PATH = 'ott-finder/admin login';
 const RESPONSES_PATH = 'ott-finder/responses'; // NEW BRANCH
 
 // 1. SYNC LINKS TO FIREBASE
-window.syncLocalToFirebase = async function(localLinks) {
+window.syncLocalToFirebase = async function (localLinks) {
     try {
         console.log("⏳ Syncing local links.js to Firebase...");
         const specificTemplates = localLinks.specificurl.map(site => ({
@@ -41,7 +41,7 @@ window.syncLocalToFirebase = async function(localLinks) {
 };
 
 // 2. FETCH LINKS FROM FIREBASE
-window.fetchFromFirebase = async function() {
+window.fetchFromFirebase = async function () {
     try {
         console.log("⏳ Fetching live links from Firebase...");
         const snapshot = await get(ref(db, DB_PATH));
@@ -63,7 +63,7 @@ window.fetchFromFirebase = async function() {
 };
 
 // 3. ADD NEW LINK VIA ADMIN UI
-window.saveToFirebase = async function(type, name, icon, url, baseUrl) {
+window.saveToFirebase = async function (type, name, icon, url, baseUrl) {
     try {
         console.log(`⏳ Pushing new ${type} link to Firebase...`);
         const customRef = ref(db, `${DB_PATH}/custom/${type}`);
@@ -77,7 +77,7 @@ window.saveToFirebase = async function(type, name, icon, url, baseUrl) {
 };
 
 // 4. SETTINGS ENGINE (SYNC, FETCH, UPDATE)
-window.fetchSettingsFromFirebase = async function() {
+window.fetchSettingsFromFirebase = async function () {
     try {
         console.log("⏳ Fetching settings from Firebase...");
         const snapshot = await get(ref(db, SETTINGS_PATH));
@@ -93,7 +93,7 @@ window.fetchSettingsFromFirebase = async function() {
     }
 };
 
-window.updateFirebaseSettings = async function(newSettings) {
+window.updateFirebaseSettings = async function (newSettings) {
     try {
         console.log("⏳ Updating global settings in Firebase...");
         await set(ref(db, SETTINGS_PATH), newSettings);
@@ -104,7 +104,7 @@ window.updateFirebaseSettings = async function(newSettings) {
 };
 
 // 5. ADMIN LOGIN TRACKER
-window.logAdminLoginToFirebase = async function(trackerData, formattedTimestamp) {
+window.logAdminLoginToFirebase = async function (trackerData, formattedTimestamp) {
     try {
         console.log("⏳ Logging admin session to Firebase...");
         const docRef = ref(db, `${ADMIN_LOG_PATH}/admin-${formattedTimestamp}`);
@@ -116,7 +116,7 @@ window.logAdminLoginToFirebase = async function(trackerData, formattedTimestamp)
 };
 
 // 6. SUBMIT PUBLIC FEEDBACK / CONTACT FORM
-window.submitFeedbackToFirebase = async function(formData) {
+window.submitFeedbackToFirebase = async function (formData) {
     try {
         console.log("⏳ Submitting user feedback to Firebase...");
         const docRef = push(ref(db, RESPONSES_PATH));
