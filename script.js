@@ -205,15 +205,32 @@ function getCompleteBrowserInfo() {
         } else { unspecificSettingsBar.style.display = 'none'; }
     }
 
-    function performSearch() {
+    function performSearch(isClick = false) {
         const query = getQuery();
         if (!query) {
-            searchInput.style.borderColor = 'var(--accent)'; searchInput.style.transform = 'translateX(5px)';
-            setTimeout(() => searchInput.style.transform = 'translateX(-5px)', 100); setTimeout(() => searchInput.style.transform = 'translateX(5px)', 200);
-            setTimeout(() => { searchInput.style.transform = 'translateX(0)'; searchInput.style.borderColor = ''; }, 300); searchInput.focus(); return;
+            if (isClick) {
+                searchInput.closest('.search-box').classList.remove('shake');
+                void searchInput.closest('.search-box').offsetWidth; // Trigger reflow
+                searchInput.closest('.search-box').classList.add('shake');
+                searchInput.focus();
+            }
+            render(''); // Render empty or static links when query is empty
+            return;
         }
-        searchBtn.style.transform = 'scale(0.9)'; setTimeout(() => searchBtn.style.transform = '', 150);
+        if (isClick) {
+            searchBtn.classList.remove('pulse');
+            void searchBtn.offsetWidth; // Trigger reflow
+            searchBtn.classList.add('pulse');
+        }
         render(query);
+    }
+
+    let searchTimeout;
+    function handleInputDebounced() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(false);
+        }, 300);
     }
 
     // ===== ADMIN SETTINGS UI =====
@@ -428,8 +445,9 @@ function getCompleteBrowserInfo() {
         const stored = localStorage.getItem('movieportal-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', stored); thumbIcon.className = stored === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
 
-        searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch());
+        searchBtn.addEventListener('click', () => performSearch(true));
+        searchInput.addEventListener('keydown', e => e.key === 'Enter' && performSearch(true));
+        searchInput.addEventListener('input', handleInputDebounced);
         themeToggle.addEventListener('click', toggleTheme);
 
         cornerSyncBadge.classList.add('visible');
