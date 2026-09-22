@@ -301,6 +301,16 @@ body {
     backdrop-filter: blur(8px);
 }
 
+.search-box.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .search-box:focus-within {
     box-shadow: 0 10px 40px var(--glow);
     border-color: var(--accent);
@@ -331,6 +341,15 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.search-box .search-btn.pulse {
+    animation: pulse 0.15s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.9); }
 }
 
 .search-box .search-btn:hover {
@@ -599,13 +618,15 @@ body {
 .embed-wrapper {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin 0.3s ease;
+    transition: grid-template-rows 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin 0.3s ease, opacity 0.4s ease;
     width: 100%;
+    opacity: 0;
 }
 
 .embed-wrapper.open {
     grid-template-rows: 1fr;
     margin-top: 15px;
+    opacity: 1;
 }
 
 .iframe-container {
